@@ -15,11 +15,10 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     {% seo %}
     {% include head-custom.html %}
-   {% include topnav.html %}
 </head>
 <body>
+    {% include topnav.html %}
     <header>
-      {% include topnav.html %}
       <div class="inner">
         <a href="{{ '/' | absolute_url }}">
           <h1>{{ site.title | default: site.github.repository_name }}</h1>
