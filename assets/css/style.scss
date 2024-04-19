@@ -1,34 +1,35 @@
 ---
 ---
 /* Navigation bar */
-.navbar {
-    background-color: #007bff; /* Bootstrap primary color */
-    box-shadow: 0 2px 4px rgba(0,0,0,.04);
-}
-
 .navbar-brand h1 {
-    font-size: 20px; /* Adjust size as needed */
-    color: white;
-    margin-bottom: 0;
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
 }
 
-.navbar-nav .nav-link {
-    color: white;
-    transition: color 0.3s ease;
+.nav .nav-link {
+	color: #{{ site.theme_color }} !important;
+  }
+
+.nav .nav-link:hover {
+	color: #1034a8 !important;
 }
 
-.navbar-nav .nav-item.active .nav-link {
-    color: #ffc107; /* Bootstrap warning color for active state */
+a {
+	color: #{{ site.theme_color }};
 }
 
-.navbar-toggler {
-    border-color: rgba(255,255,255,0.1);
+a:hover {
+	color: #1034a8
 }
 
-.navbar-toggler-icon {
-    background-image: url('data:image/svg+xml;charset=utf8,%3Csvg viewBox=\'0 0 30 30\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath stroke=\'rgba(255, 255, 255, 0.5)\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-miterlimit=\'10\' d=\'M4 7h22M4 15h22M4 23h22\'/%3E%3C/svg%3E');
+.navbar-dark .navbar-nav .nav-link:hover {
+    color: rgba(255,255,255,0.5);
 }
 
+.navbar-dark .navbar-nav .nav-link {
+	color: white;
+}
 /* Responsive adjustments */
 @media (max-width: 991px) {
     .navbar-collapse {
