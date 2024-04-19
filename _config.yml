@@ -3,5 +3,6 @@ description: Test Page
 theme: jekyll-theme-architect
 baseurl: "/container-images"  # repository name
 url: "https://michaelakridge-noaa.github.io"  # GitHub Pages URL 
+show_downloads: true
 plugins:
   - jekyll-feed
