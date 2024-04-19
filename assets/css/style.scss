@@ -2,6 +2,35 @@
 ---
 @import 'jekyll-theme-architect';
 
+.navbar-brand h1 {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.nav .nav-link {
+	color: #{{ site.theme_color }} !important;
+  }
+
+.nav .nav-link:hover {
+	color: #1034a8 !important;
+}
+
+a {
+	color: #{{ site.theme_color }};
+}
+
+a:hover {
+	color: #1034a8
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+    color: rgba(255,255,255,0.5);
+}
+
+.navbar-dark .navbar-nav .nav-link {
+	color: white;
+}
 
 /* Base style for smaller screens */
 header h1 {
