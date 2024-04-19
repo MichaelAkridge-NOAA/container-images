@@ -1,0 +1,22 @@
+<!-- topnav.html -->
+<header class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container navbar-container">
+        <a class="navbar-brand" href="{{ '/' | relative_url }}">
+            <h1>Development Containers</h1>
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse" id="navbarSupportedContent" role="navigation" aria-label="Top Level">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item {{ page.url == '/index.html' ? 'active' : '' }}">
+                    <a class="nav-link" href="{{ '/index.html' | relative_url }}">Overview</a>
+                </li>
+                <li class="nav-item {{ page.url == '/test/' ? 'active' : '' }}">
+                    <a class="nav-link" href="{{ '/test' | relative_url }}">Reference Test</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</header>
+
