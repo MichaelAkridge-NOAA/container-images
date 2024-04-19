@@ -12,16 +12,6 @@
     <![endif]-->
     {% seo %}
     {% include head-custom.html %}
-    <script src="{{ '/assets/js/loadPackages.js' | relative_url }}"></script>
-    <script src="{{ '/assets/js/loadExtensions.js' | relative_url }}"></script> 
-    <script src="{{ '/assets/js/loadAdvancedSettings.js' | relative_url }}"></script>
-    <script src="{{ '/assets/js/loadGenerateDevCon.js' | relative_url }}"></script>    
-    <script src="{{ '/assets/js/loadDownloadOption.js' | relative_url }}"></script>
-    <script src="{{ '/assets/js/loadPackages.js' | relative_url }}"></script>
-    <script src="{{ '/assets/js/loadExtensions.js' | relative_url }}"></script> 
-    <script src="{{ '/assets/js/loadAdvancedSettings.js' | relative_url }}"></script>
-    <script src="{{ '/assets/js/loadGenerateDevCon.js' | relative_url }}"></script>    
-    <script src="{{ '/assets/js/loadDownloadOption.js' | relative_url }}"></script>
 </head>
 <body>
     <header>
@@ -37,8 +27,8 @@
             <ul>
                 <li><a href="{{ '/' | relative_url }}">Home</a></li>
                 <li><a href="{{ '/about.html' | relative_url }}">About</a></li>
-                <!--markdown files get rendered as html and must be linked without .md>
-                <li><a href="{{ '/test' | relative_url }}">Test</a></li>
+                <!-- Update link to point to the directory URL structure for proper page rendering of md files -->
+                <li><a href="{{ '/test' | relative_url }}">Test MD file</a></li>
             </ul>
         </nav>
       </div>
