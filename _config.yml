@@ -6,3 +6,5 @@ url: "https://michaelakridge-noaa.github.io"  # GitHub Pages URL
 show_downloads: true
 plugins:
   - jekyll-feed
+markdown: kramdown
+
