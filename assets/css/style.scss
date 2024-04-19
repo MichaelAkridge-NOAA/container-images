@@ -3,50 +3,71 @@
 @import 'jekyll-theme-architect';
 
 /* General navbar styles */
-.navbar {
-    background-color: #007bff; /* Bootstrap's primary blue */
-    margin-bottom: 0; /* Remove any margin below the navbar */
-}
+@media (min-width: 992px) {
+	.dap-navbar {
+		position: -webkit-sticky;
+		position: sticky;
+		top: 0;
+		z-index: 1071;
+	}
 
-.navbar-brand h1 {
-    font-size: 24px; /* Larger font size for visibility */
-    color: white; /* White text color */
-    margin-bottom: 0; /* No bottom margin to keep items aligned */
-}
+	.dap-sidebar {
+		position: -webkit-sticky;
+		position: sticky;
+		top: 100px;
+		z-index: 1000;
+		height: calc(100vh - 110px);
+		overflow: auto;
+	}
 
-.navbar-toggler {
-    border-color: rgba(255,255,255,0.1); /* Lighter border for the toggle button */
-}
-
-.navbar-toggler-icon {
-    color: white; /* Ensure toggle icon is visible */
-}
-
-.navbar-nav .nav-link {
-    color: white; /* White text for links */
-    padding: 15px 20px; /* Larger padding for clickable area */
-}
-
-.navbar-nav .nav-item.active .nav-link {
-    color: #ffc107; /* Bootstrap warning color for the active link */
-    background-color: rgba(255, 255, 255, 0.2); /* Slight white background for active item */
-}
-
-/* Full-width adjustments */
-.container-fluid {
-    padding-right: 0;
-    padding-left: 0;
-    margin-right: auto;
-    margin-left: auto;
-    width: 100%;
+	h3 .anchor, h4 .anchor, h5 .anchor {
+		scroll-margin-top: 60px;
+	}
 }
 
 @media (max-width: 991px) {
-    .navbar-collapse {
-        background-color: #007bff; /* Same as navbar for a seamless look */
-    }
+	.dap-sidebar {
+		margin-top: 1rem;
+		margin-bottom: 1rem;
+	}
 }
 
+.navbar-brand h1 {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.nav .nav-link {
+	color: #{{ site.theme_color }} !important;
+  }
+
+.nav .nav-link:hover {
+	color: #1034a8 !important;
+}
+
+a {
+	color: #{{ site.theme_color }};
+}
+
+a:hover {
+	color: #1034a8
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+    color: rgba(255,255,255,0.5);
+}
+
+.navbar-dark .navbar-nav .nav-link {
+	color: white;
+}
+
+.docs-nav {
+	h4 {
+		display: inline-block;
+		font-size: 14px;
+	}
+}
 
 
 

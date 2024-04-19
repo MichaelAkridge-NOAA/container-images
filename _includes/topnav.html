@@ -1,18 +1,21 @@
 <!-- topnav.html -->
-<header class="navbar navbar-expand-lg navbar-dark bg-primary" style="width: 100%;">
-    <div class="container-fluid"> <!-- Change from 'container' to 'container-fluid' for full width -->
-        <a class="navbar-brand" href="{{ '/' | relative_url }}">
+<header class="navbar navbar-expand-lg navbar-dark bg-primary -navbar">
+    <div class="container navbar-container">
+        <a class="navbar-brand" href="{{ site.baseurl }}/">
+            <h1>Containers</h1>
         </a>
+
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
+                <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+        <div class="navbar-collapse collapse" id="navbarSupportedContent" role="navigation" aria-label="Top Level">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item {{ page.url == '/overview/' ? 'active' : '' }}">
-                    <a class="nav-link" href="{{ '/overview/' | relative_url }}">Overview</a>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ '/index.html' | relative_url }}">Overview</a>
                 </li>
-                <li class="nav-item {{ page.url == '/implementors/json_reference/' ? 'active' : '' }}">
-                    <a class="nav-link" href="{{ '/implementors/json_reference/' | relative_url }}">Reference</a>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ '/test' | relative_url }}">Reference</a>
                 </li>
             </ul>
         </div>
