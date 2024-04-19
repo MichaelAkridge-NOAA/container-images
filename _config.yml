@@ -1,7 +1,8 @@
-title: Test
-description: test
+title: NMFS Container Images
+description: Test Page
 #theme: jekyll-theme-architect
+baseurl: "/container-images"  # repository name
+url: "https://michaelakridge-noaa.github.io"  # GitHub Pages URL 
 theme: minima 
 plugins:
   - jekyll-feed
-
