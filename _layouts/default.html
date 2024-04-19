@@ -3,25 +3,6 @@
 {% include head.html %}
 <body>
     {% include topnav.html %}
-    <header>
-      <div class="inner">
-        <a href="{{ '/' | absolute_url }}">
-          <h1>{{ site.title | default: site.github.repository_name }}</h1>
-        </a>
-        <h2>{{ site.description | default: site.github.project_tagline }}</h2>
-        {% if site.github.is_project_page %}
-          <a href="{{ site.github.repository_url }}" class="button"><small>View project on</small> GitHub</a>
-        {% endif %}
-       <nav>
-            <ul>
-                <li><a href="{{ '/' | relative_url }}">Home</a></li>
-                <li><a href="{{ '/about.html' | relative_url }}">About</a></li>
-                <!-- Update link to point to the directory URL structure for proper page rendering of md files -->
-                <li><a href="{{ '/test' | relative_url }}">Test MD file</a></li>
-            </ul>
-        </nav>
-      </div>
-    </header>
 <div id="content-wrapper">
     <div class="inner clearfix">
     <section id="main-content">
