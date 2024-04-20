@@ -57,11 +57,9 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             const folders = data.filter(item => item.type === 'dir').map(item => item.name);
             createNavLinks(folders);
-            loadReadmeFiles(folders); // Ensuring that this function is called to load READMEs
         })
         .catch(error => {
             console.error('Error:', error);
             document.getElementById('readmeContainer').innerHTML = `<p>Error fetching directory list: ${error.message}</p>`;
         });
 });
-
