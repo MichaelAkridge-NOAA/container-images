@@ -2,6 +2,26 @@
 ---
 @import 'jekyll-theme-architect';
 
+
+/* style.css */
+#folderNav {
+    background-color: #f4f4f4;
+    border-bottom: 1px solid #ccc;
+    padding: 10px;
+}
+
+#folderNav a {
+    margin-right: 10px;
+    text-decoration: none;
+    color: #333;
+}
+
+#readmeContainer {
+    padding: 20px;
+    margin-top: 10px;
+}
+
+
 .navbar {
     background-color: #333;
     color: white;
