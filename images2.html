@@ -3,7 +3,9 @@ layout: default
 title: Images 2
 ---
 
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="{{ '/assets/js/marked.min.js' | relative_url }}"></script>
+
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const baseRepoUrl = 'https://api.github.com/repos/MichaelAkridge-NOAA/container-images/contents/images';
