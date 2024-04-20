@@ -30,10 +30,6 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(data => {
                 if (!data) return; // If there's no data, stop processing
-                if (typeof marked !== 'function') {
-                    console.error('marked library is not loaded or unavailable.');
-                    return;
-                }
                 const content = atob(data.content); // Decode base64-encoded content
                 const markdownHtml = marked(content);
                 const container = document.createElement('div');
