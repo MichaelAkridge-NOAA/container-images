@@ -13,37 +13,36 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Define the function to load README files
-    function loadReadmeFiles(folders) {
+    // Define the function to load a README file
+    function loadReadmeFile(folder) {
         const baseReadmeUrl = 'https://api.github.com/repos/MichaelAkridge-NOAA/container-images/contents/images/';
+        const url = `${baseReadmeUrl}${folder}/README.md`;
 
-        folders.forEach(folder => {
-            const url = `${baseReadmeUrl}${folder}/README.md`;
-            console.log("Fetching URL:", url); // Debugging URL
-
-            fetch(url)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Failed to load README.md for ${folder}: Server responded with status ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (typeof marked !== 'function') {
-                        console.error('marked library is not loaded or unavailable.');
-                        return;
-                    }
-                    const content = atob(data.content); // Decode base64-encoded content
-                    const markdownHtml = marked(content);
-                    const container = document.createElement('div');
-                    container.innerHTML = `<h2>README: ${folder}</h2>${markdownHtml}`;
-                    document.getElementById('readmeContainer').appendChild(container);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    document.getElementById('readmeContainer').innerHTML += `<p>Error loading the README for ${folder}: ${error.message}</p>`;
-                });
-        });
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    // If README doesn't exist, log and display a friendly message instead of throwing an error
+                    console.log(`README.md for ${folder} not found: Server responded with status ${response.status}`);
+                    document.getElementById('readmeContainer').innerHTML += `<p>README not available for ${folder}.</p>`;
+                    return null; // Stop processing further
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (!data) return; // If there's no data, stop processing
+                if (typeof marked !== 'function') {
+                    console.error('marked library is not loaded or unavailable.');
+                    return;
+                }
+                const content = atob(data.content); // Decode base64-encoded content
+                const markdownHtml = marked(content);
+                const container = document.createElement('div');
+                container.innerHTML = `<h2>README: ${folder}</h2>${markdownHtml}`;
+                document.getElementById('readmeContainer').appendChild(container);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
     }
 
     // Fetch all folders and then initialize nav links
@@ -63,3 +62,4 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('readmeContainer').innerHTML = `<p>Error fetching directory list: ${error.message}</p>`;
         });
 });
+
