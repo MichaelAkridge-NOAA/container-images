@@ -1,12 +1,28 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const folders = ['arcgis', 'coastwatch']; // List of folders that contain the README.md
-    const baseRepoUrl = 'https://api.github.com/repos/MichaelAkridge-NOAA/container-images/contents/images/';
+    const baseRepoUrl = 'https://api.github.com/repos/MichaelAkridge-NOAA/container-images/contents/images';
+
+    fetch(baseRepoUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Failed to fetch directories: Server responded with status ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            const folders = data.filter(item => item.type === 'dir').map(item => item.name);
+            loadReadmeFiles(folders);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('readmeContainer').innerHTML += `<p>Error fetching directory list: ${error.message}</p>`;
+        });
+});
+
+function loadReadmeFiles(folders) {
+    const baseReadmeUrl = 'https://api.github.com/repos/MichaelAkridge-NOAA/container-images/contents/images/';
 
     folders.forEach(folder => {
-        // Constructing the URL properly using the 'contents' endpoint
-        const url = `${baseRepoUrl}${folder}/README.md`;
-
-        fetch(url)
+        fetch(`${baseReadmeUrl}${folder}/README.md`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`Failed to load README.md for ${folder}: Server responded with status ${response.status}`);
@@ -24,5 +40,5 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('readmeContainer').innerHTML += `<p>Error loading the README for ${folder}: ${error.message}</p>`;
             });
     });
-});
+}
 
