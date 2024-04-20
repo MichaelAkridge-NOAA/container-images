@@ -14,25 +14,31 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Define the function to load README files
-    function loadReadmeFile(folder) {
-        const url = `https://api.github.com/repos/MichaelAkridge-NOAA/container-images/contents/images/${folder}/README.md`;
-        fetch(url)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Failed to load README.md for ${folder}: Server responded with status ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
+function loadReadmeFile(folder) {
+    const url = `https://api.github.com/repos/MichaelAkridge-NOAA/container-images/contents/images/${folder}/README.md`;
+    console.log("Attempting to fetch README from:", url);  // Log the URL to check correctness
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Failed to load README.md for ${folder}: Server responded with status ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (typeof marked !== 'function') {
+                console.error('marked is not loaded correctly');
+            } else {
                 const content = atob(data.content);
                 const markdownHtml = marked(content);
                 document.getElementById('readmeContainer').innerHTML = `<h2>README: ${folder}</h2>${markdownHtml}`;
-            })
-            .catch(error => {
-                console.error('Error loading README:', error);
-                document.getElementById('readmeContainer').innerHTML += `<p>Error loading the README for ${folder}: ${error.message}</p>`;
-            });
-    }
+            }
+        })
+        .catch(error => {
+            console.error('Error loading README:', error);
+            document.getElementById('readmeContainer').innerHTML += `<p>Error loading the README for ${folder}: ${error.message}</p>`;
+        });
+}
+
 
     // Fetch all folders and then initialize nav links
     fetch(baseRepoUrl)
