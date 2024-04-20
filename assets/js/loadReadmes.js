@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const baseRepoUrl = 'https://api.github.com/repos/MichaelAkridge-NOAA/container-images/contents/images';
 
+    // Define the function to create navigation links
     function createNavLinks(folders) {
         const nav = document.getElementById('folderNav');
         folders.forEach(folder => {
@@ -12,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Define the function to load README files
     function loadReadmeFile(folder) {
         const url = `https://api.github.com/repos/MichaelAkridge-NOAA/container-images/contents/images/${folder}/README.md`;
         fetch(url)
@@ -32,6 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
+    // Fetch all folders and then initialize nav links
     fetch(baseRepoUrl)
         .then(response => {
             if (!response.ok) {
