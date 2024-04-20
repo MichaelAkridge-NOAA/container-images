@@ -14,35 +14,54 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Define the function to load README files
-function loadReadmeFiles(folders) {
-    const baseReadmeUrl = 'https://api.github.com/repos/MichaelAkridge-NOAA/container-images/contents/images/';
+    function loadReadmeFiles(folders) {
+        const baseReadmeUrl = 'https://api.github.com/repos/MichaelAkridge-NOAA/container-images/contents/images/';
 
-    folders.forEach(folder => {
-        const url = `${baseReadmeUrl}${folder}/README.md`;
-        console.log("Fetching URL:", url); // Debugging URL
+        folders.forEach(folder => {
+            const url = `${baseReadmeUrl}${folder}/README.md`;
+            console.log("Fetching URL:", url); // Debugging URL
 
-        fetch(url)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Failed to load README.md for ${folder}: Server responded with status ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (typeof marked !== 'function') {
-                    console.error('marked library is not loaded or unavailable.');
-                    return;
-                }
-                const content = atob(data.content); // Decode base64-encoded content
-                const markdownHtml = marked(content);
-                const container = document.createElement('div');
-                container.innerHTML = `<h2>README: ${folder}</h2>${markdownHtml}`;
-                document.getElementById('readmeContainer').appendChild(container);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                document.getElementById('readmeContainer').innerHTML += `<p>Error loading the README for ${folder}: ${error.message}</p>`;
-            });
-    });
-}
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Failed to load README.md for ${folder}: Server responded with status ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (typeof marked !== 'function') {
+                        console.error('marked library is not loaded or unavailable.');
+                        return;
+                    }
+                    const content = atob(data.content); // Decode base64-encoded content
+                    const markdownHtml = marked(content);
+                    const container = document.createElement('div');
+                    container.innerHTML = `<h2>README: ${folder}</h2>${markdownHtml}`;
+                    document.getElementById('readmeContainer').appendChild(container);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('readmeContainer').innerHTML += `<p>Error loading the README for ${folder}: ${error.message}</p>`;
+                });
+        });
+    }
+
+    // Fetch all folders and then initialize nav links
+    fetch(baseRepoUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Failed to fetch directories: Server responded with status ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            const folders = data.filter(item => item.type === 'dir').map(item => item.name);
+            createNavLinks(folders);
+            loadReadmeFiles(folders); // Ensuring that this function is called to load READMEs
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('readmeContainer').innerHTML = `<p>Error fetching directory list: ${error.message}</p>`;
+        });
+});
 
