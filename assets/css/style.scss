@@ -3,6 +3,9 @@
 @import 'jekyll-theme-architect';
 
 
+
+
+
 .navbar {
     background-color: #333;
     color: white;
@@ -20,11 +23,11 @@
     padding: 0;
     margin: 0;
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start; /* Aligns items to the left */
 }
 
 .nav-item {
-    margin-left: 20px;
+    margin-right: 20px; /* Adds spacing between items, adjusted for left alignment */
 }
 
 .nav-link {
@@ -36,6 +39,11 @@
 .nav-link:hover {
     color: #ddd;
 }
+
+
+
+
+
 
 
 
