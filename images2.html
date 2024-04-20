@@ -3,15 +3,22 @@ layout: default
 title: Images 2
 ---
 <title>Test 2 Readme Files Viewer</title>
+<body>
+    <!-- Your body content here -->
 
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
+    <!-- Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Your Custom Scripts -->
+    <script src="{{ '/assets/js/loadReadmes.js' | relative_url }}"></script>
+    <!-- Your Custom Scripts -->
     <nav id="folderNav">
         <!-- Navigation links will be populated here -->
     </nav>
     <div id="readmeContainer">
         <!-- README content will be displayed here -->
     </div>
+
+</body>
 
 
 
