@@ -1,22 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     const baseRepoUrl = 'https://api.github.com/repos/MichaelAkridge-NOAA/container-images/contents/images';
 
-    fetch(baseRepoUrl)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Failed to fetch directories: Server responded with status ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            const folders = data.filter(item => item.type === 'dir').map(item => item.name);
-            createNavLinks(folders);  // Ensuring createNavLinks is called correctly
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            document.getElementById('readmeContainer').innerHTML = `<p>Error fetching directory list: ${error.message}</p>`;
-        });
-
     function createNavLinks(folders) {
         const nav = document.getElementById('folderNav');
         folders.forEach(folder => {
@@ -47,5 +31,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('readmeContainer').innerHTML += `<p>Error loading the README for ${folder}: ${error.message}</p>`;
             });
     }
+
+    fetch(baseRepoUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Failed to fetch directories: Server responded with status ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            const folders = data.filter(item => item.type === 'dir').map(item => item.name);
+            createNavLinks(folders);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('readmeContainer').innerHTML = `<p>Error fetching directory list: ${error.message}</p>`;
+        });
 });
 
