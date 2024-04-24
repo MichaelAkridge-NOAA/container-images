@@ -1,61 +1,22 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const baseRepoUrl = 'https://api.github.com/repos/MichaelAkridge-NOAA/container-images/contents/images';
+fetch('packages.json')
+  .then(response => response.json())
+  .then(data => {
+    const navList = document.getElementById('packageList'); // Ensure this ID matches with your HTML
 
-    function createNavLinks(folders) {
-        const nav = document.getElementById('folderNav');
-        folders.forEach(folder => {
-            const link = document.createElement('a');
-            link.href = '#';
-            link.textContent = folder;
-            link.onclick = () => loadReadmeFile(folder);
-            nav.appendChild(link);
-        });
-    }
+    data.forEach(pkg => {
+      const parts = pkg.name.split('/'); // Splits the 'name' into parts
+      const folderName = parts[parts.length - 1]; // Gets the last part which should be the folder name
+      const readmeUrl = `https://michaelakridge-noaa.github.io/images/${folderName}`; // Correctly constructs the URL
 
-    function loadReadmeFile(folder) {
-        const baseReadmeUrl = 'https://api.github.com/repos/MichaelAkridge-NOAA/container-images/contents/images/';
-        const url = `${baseReadmeUrl}${folder}/README.md`;
-
-        fetch(url)
-            .then(response => {
-                if (!response.ok) {
-                    console.log(`README.md for ${folder} not found: Server responded with status ${response.status}`);
-                    document.getElementById('readmeContainer').innerHTML += `<p>README not available for ${folder}.</p>`;
-                    return null;
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (!data) return;
-                try {
-                    const content = atob(data.content); // Decode base64-encoded content
-                    const markdownHtml = marked.parse(content); // Using marked.parse() based on latest API
-                    const container = document.createElement('div');
-                    container.innerHTML = `<h2>README: ${folder}</h2>${markdownHtml}`;
-                    document.getElementById('readmeContainer').appendChild(container);
-                } catch (error) {
-                    console.error('Error using marked:', error);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-    }
-
-    fetch(baseRepoUrl)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Failed to fetch directories: Server responded with status ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            const folders = data.filter(item => item.type === 'dir').map(item => item.name);
-            createNavLinks(folders);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            document.getElementById('readmeContainer').innerHTML = `<p>Error fetching directory list: ${error.message}</p>`;
-        });
-});
+      const listItem = document.createElement('li');
+      listItem.className = 'nav-item'; // Adds Bootstrap or your custom class for styling
+      const link = document.createElement('a');
+      link.href = readmeUrl;
+      link.className = 'nav-link'; // Adds Bootstrap or your custom class for styling
+      link.textContent = folderName; // Displays the folder name as the link text
+      listItem.appendChild(link);
+      navList.appendChild(listItem); // Appends the list item to the navigation list
+    });
+  })
+  .catch(error => console.error('Failed to load packages:', error));
 
