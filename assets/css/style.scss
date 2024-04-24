@@ -2,6 +2,8 @@
 ---
 @import 'jekyll-theme-architect';
 
+/* font style */
+
 * {
     font-family: 'Helvetica Neue', Helvetica, Arial, serif;
 }
@@ -11,17 +13,17 @@ width: 1080px;
     font-family: 'Helvetica Neue', Helvetica, Arial, serif;
 }
 
-
+/* clean header style */
 #main-content h1:before, #main-content h2:before, #main-content h3:before {
     content: ""; 
 }
-
+/* link/nav hover style */
 a:hover {
     color: #04B2D9;
 
 }
 
-/* style.css */
+/* nav style */
 .navbar {
   display: flex;
   justify-content: space-between;
