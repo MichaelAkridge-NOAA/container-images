@@ -12,6 +12,11 @@ width: 1080px;
 }
 
 
+#main-content h1:before, #main-content h2:before, #main-content h3:before {
+    content: ""; 
+}
+
+
 /* style.css */
 .navbar {
   display: flex;
