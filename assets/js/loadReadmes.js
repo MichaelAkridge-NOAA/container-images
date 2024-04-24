@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    fetch('packages.json')
+    fetch('https://michaelakridge-noaa.github.io/container-images/packages.json')
     .then(response => response.json())
     .then(data => {
         const navList = document.getElementById('dropdownMenu'); // This ID should refer to the dropdown menu container
