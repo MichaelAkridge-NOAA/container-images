@@ -1,5 +1,5 @@
 # For building and deploying a Jekyll site to GitHub Pages - Deploy Jekyll GitHub Pages dependencies preinstalled
-name: 0. Deploy GitHub Pages
+name: 0 | Deploy GitHub Pages
 
 on:
   # Runs on pushes targeting the default branch
