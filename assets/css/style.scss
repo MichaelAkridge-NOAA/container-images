@@ -6,6 +6,11 @@
     font-family: 'Helvetica Neue', Helvetica, Arial, serif;
 }
 
+#main-content, #main-content h1, #main-content h2, #main-content h3 {
+    font-family: 'Helvetica Neue', Helvetica, Arial, serif;
+}
+
+
 /* style.css */
 .navbar {
   display: flex;
@@ -55,14 +60,6 @@ color: white;
   display: block;
 width: 200px;
 }
-
-
-
-
-
-
-
-
 
 
 
@@ -160,8 +157,3 @@ input {
 
 main-content {
 width: 1080px;}
-
-.main-content, .main-content h1, .main-content h2, .main-content h3 {
-    font-family: 'Helvetica Neue', Helvetica, Arial, serif;
-}
-
