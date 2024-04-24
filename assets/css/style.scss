@@ -66,6 +66,9 @@ color: white;
   display: block;
 width: 200px;
 }
+.dropdown-item:hover {
+  text-decoration: underline;  /* This will underline the text on hover */
+}
 
 
 
