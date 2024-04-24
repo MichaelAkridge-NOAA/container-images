@@ -2,6 +2,9 @@
 ---
 @import 'jekyll-theme-architect';
 
+@import 'https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible&display=swap';
+
+$font-family: "Atkinson Hyperlegible", sans-serif;
 
 /* style.css */
 .navbar {
@@ -52,6 +55,13 @@ color: white;
   display: block;
 width: 200px;
 }
+
+
+
+
+
+
+
 
 
 
@@ -139,6 +149,25 @@ header {
 .input-group:last-child {
     margin-right: 0; /* Removes margin from the last input group to align properly */
 }
+.logo {
+    width: 50%; /* Adjusts the width of the logo */
+    float: right; /* Aligns the logo to the right */
+    margin-left: 20px; /* Provides some space between the text and the logo */
+}
+
+.button {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.button small {
+    font-size: 12px;
+}
+
 
 input {
     padding: 8px;
@@ -146,3 +175,5 @@ input {
     width: 100%; /* Full width of the container */
 }
 
+main-content {
+width: 1080px;}

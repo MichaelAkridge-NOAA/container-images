@@ -1,11 +1,12 @@
 <header>
-      <div class="inner">
+    <div class="inner">
         <a href="{{ '/' | absolute_url }}">
-          <h1>{{ site.title | default: site.github.repository_name }}</h1>
+            <h1>{{ site.title | default: site.github.repository_name }}</h1>
         </a>
         <h2>NMFS Open Science Docker Stack</h2>
         {% if site.github.is_project_page %}
-          <a href="{{ site.github.repository_url }}" class="button"><small>View project on</small> GitHub</a>
+            <a href="{{ site.github.repository_url }}" class="button"><small>View project on</small> GitHub</a>
         {% endif %}
-      </div>
+        <img src="https://raw.githubusercontent.com/nmfs-opensci/assets/main/logo/nmfs-opensci-logo3.png" alt="NMFS Open Science logo" class="logo">
+    </div>
 </header>
