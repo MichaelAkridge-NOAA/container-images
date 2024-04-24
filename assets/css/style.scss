@@ -6,6 +6,8 @@
 
 $font-family: "Atkinson Hyperlegible", sans-serif;
 
+
+
 /* style.css */
 .navbar {
   display: flex;
@@ -159,4 +161,10 @@ input {
 }
 
 main-content {
-width: 1080px;}
+width: 1080px;
+font-family: 'Helvetica Neue', Helvetica, Arial, serif;}
+
+* {
+    font-family: 'Helvetica Neue', Helvetica, Arial, serif;
+}
+
