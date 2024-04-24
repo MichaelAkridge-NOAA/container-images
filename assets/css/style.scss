@@ -16,7 +16,10 @@ width: 1080px;
     content: ""; 
 }
 
+a:hover {
+    color: #04B2D9;
 
+}
 /* style.css */
 .navbar {
   display: flex;
@@ -59,7 +62,6 @@ color: white;
 
 .dropdown:hover .dropdown-menu {
   display: block;
- text-decoration: underline;  /* This will underline the text on hover */
 }
 
 .dropdown-item {
@@ -68,7 +70,7 @@ color: white;
 width: 200px;
 }
 .dropdown-item:hover {
-  text-decoration: underline;  /* This will underline the text on hover */
+  font-weight: bold;  /* Makes the text bold on hover */
 }
 
 
