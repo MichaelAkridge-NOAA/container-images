@@ -2,11 +2,9 @@
 ---
 @import 'jekyll-theme-architect';
 
-@import 'https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible&display=swap';
-
-$font-family: "Atkinson Hyperlegible", sans-serif;
-
-
+* {
+    font-family: 'Helvetica Neue', Helvetica, Arial, serif;
+}
 
 /* style.css */
 .navbar {
@@ -161,10 +159,9 @@ input {
 }
 
 main-content {
-width: 1080px;
-font-family: 'Helvetica Neue', Helvetica, Arial, serif;}
+width: 1080px;}
 
-* {
+.main-content, .main-content h1, .main-content h2, .main-content h3 {
     font-family: 'Helvetica Neue', Helvetica, Arial, serif;
 }
 
