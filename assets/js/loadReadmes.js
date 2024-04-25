@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    fetch('${repositoryUrl}/packages.json')
+    fetch(`${repositoryUrl}/packages.json`)
     .then(response => response.json())
     .then(data => {
         const navList = document.getElementById('dropdownMenu'); // This ID should refer to the dropdown menu container
@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', function() {
         data.forEach(pkg => {
             const parts = pkg.name.split('/'); // Splits the 'name' into parts
             const folderName = parts[parts.length - 1]; // Gets the last part which should be the folder name
+
+            // Ensure to use backticks for template literals here as well
             const readmeUrl = `${repositoryUrl}/images/${folderName}`; // Correctly constructs the URL
 
             const listItem = document.createElement('li');
