@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
+    var repositoryUrl = 'https://michaelakridge-noaa.github.io/container-images'; // Hard-coded for testing
     fetch(`${repositoryUrl}/packages.json`)
     .then(response => response.json())
     .then(data => {
