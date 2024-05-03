@@ -1,7 +1,7 @@
 # tidyverse + texlive rocker with RStudio
 # Is designed to have a conda environment called notebook like
 # the pangeo images. The jupyterhub modules are in this environment.
-FROM rocker/verse:4.3.3
+FROM rocker/verse:4.4
 
 ENV CONDA_ENV=notebook \
     DEBIAN_FRONTEND=noninteractive \
@@ -82,6 +82,11 @@ RUN echo "Checking for 'conda-linux-64.lock' or 'environment.yml'..." \
         ; fi
 
 RUN pip install jupyter-rsession-proxy
+
+# some teaching preferences
+RUN git config --system pull.rebase false && \
+    git config --system credential.helper 'cache --timeout=36000'
+
 
 WORKDIR ${HOME}
 
