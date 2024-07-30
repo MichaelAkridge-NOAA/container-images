@@ -24,6 +24,7 @@ jobs:
         id: matrix
         run: |
           paths=$(jq -R . < dockerfile_paths.txt | jq -s .)
+          echo "paths=${paths}"  # Debug line to print the paths
           echo "::set-output name=paths::${paths}"
 
   call-reusable-workflow:
