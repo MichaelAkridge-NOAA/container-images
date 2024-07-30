@@ -60,6 +60,10 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Configure Git
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
 
       - name: Build and push Docker image
         run: |
@@ -72,11 +76,6 @@ jobs:
 
       - name: Install bumpversion
         run: pip install bumpversion
-
-      - name: Configure Git
-        run: |
-          git config --global user.email "action@github.com"
-          git config --global user.name "GitHub Action"
 
       #- name: Debug - List directory contents
       #  run: ls -R
