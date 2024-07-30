@@ -63,6 +63,9 @@ jobs:
           docker push ghcr.io/${OWNER_LC}/${IMAGE_NAME}:${{ env.VERSION }}
           docker push ghcr.io/${OWNER_LC}/${IMAGE_NAME}:${{ github.sha }}
 
+      - name: Install bumpversion
+        run: pip install bumpversion
+
       - name: Bump version and push tag
         run: |
           bumpversion patch --current-version $(cat ${{ matrix.folder }}/VERSION) --allow-dirty --no-tag --config-file .bumpversion.cfg ${{ matrix.folder }}/VERSION
