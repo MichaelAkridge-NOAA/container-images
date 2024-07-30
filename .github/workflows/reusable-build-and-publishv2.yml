@@ -47,7 +47,7 @@ jobs:
         run: |
           VERSION_FILE=${{ matrix.folder }}/VERSION
           if [ ! -f "$VERSION_FILE" ]; then
-            echo "1.0.0" > $VERSION_FILE
+            echo "0.0.0" > $VERSION_FILE
           fi
 
       - name: Get version
@@ -87,10 +87,18 @@ jobs:
       - name: Debug - Show VERSION file content before bumpversion
         run: cat ${{ matrix.folder }}/VERSION
 
+      - name: Verify VERSION file exists
+        run: |
+          if [ ! -f "${{ matrix.folder }}/VERSION" ]; then
+            echo "VERSION file not found"
+            exit 1
+          fi
+          echo "VERSION file exists"
+
       - name: Bump version and push tag
         run: |
           echo "Updating version in ${{ matrix.folder }}/VERSION"
-          bumpversion patch --current-version $(cat ${{ matrix.folder }}/VERSION) --allow-dirty --config-file .bumpversion.cfg ${{ matrix.folder }}/VERSION
+          bumpversion patch --current-version $(cat ${{ matrix.folder }}/VERSION) --allow-dirty --config-file .bumpversion.cfg
           NEW_VERSION=$(cat ${{ matrix.folder }}/VERSION)
           echo "New version is $NEW_VERSION"
           git add ${{ matrix.folder }}/VERSION
