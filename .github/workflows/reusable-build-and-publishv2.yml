@@ -47,7 +47,7 @@ jobs:
         run: |
           VERSION_FILE=${{ matrix.folder }}/VERSION
           if [ ! -f "$VERSION_FILE" ]; then
-            echo "1.0.0" > $VERSION_FILE
+            echo "0.0.0" > $VERSION_FILE
           fi
 
       - name: Get version
@@ -60,10 +60,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Configure Git
-        run: |
-          git config --global user.email "action@github.com"
-          git config --global user.name "GitHub Action"
 
       - name: Build and push Docker image
         run: |
@@ -77,6 +73,11 @@ jobs:
       - name: Install bumpversion
         run: pip install bumpversion
 
+      - name: Configure Git
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+
       #- name: Debug - List directory contents
       #  run: ls -R
 
@@ -85,10 +86,12 @@ jobs:
 
       - name: Bump version and push tag
         run: |
-          bumpversion patch --current-version $(cat ${{ matrix.folder }}/VERSION) --allow-dirty --config-file .bumpversion.cfg ${{ matrix.folder }}/VERSION
+          bumpversion patch --current-version $(cat ${{ matrix.folder }}/VERSION) --allow-dirty --config-file .bumpversion.cfg
+          NEW_VERSION=$(cat ${{ matrix.folder }}/VERSION)
+          echo "New version is $NEW_VERSION"
           git add ${{ matrix.folder }}/VERSION
-          git commit -m "Bump version for ${{ matrix.folder }} to $(cat ${{ matrix.folder }}/VERSION)"
-          git tag -a "${{ matrix.folder }}-v$(cat ${{ matrix.folder }}/VERSION)" -m "Version $(cat ${{ matrix.folder }}/VERSION) for ${{ matrix.folder }}"
+          git commit -m "Bump version for ${{ matrix.folder }} to $NEW_VERSION"
+          git tag -a "${{ matrix.folder }}-v$NEW_VERSION" -m "Version $NEW_VERSION for ${{ matrix.folder }}"
           git push origin --tags
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
