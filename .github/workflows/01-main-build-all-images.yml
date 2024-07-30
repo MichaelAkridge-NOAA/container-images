@@ -28,7 +28,7 @@ jobs:
 
   call-reusable-workflow:
     needs: generate-matrix
-    uses: ./.github/workflows/reusable-build-and-publish-docker-images.yml
+    uses: ./.github/workflows/reusable-build-and-publish.yml
     with:
       dockerfile_paths: ${{ needs.generate-matrix.outputs.paths }}
       repository: ${{ github.repository }}
