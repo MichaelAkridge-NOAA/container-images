@@ -66,12 +66,12 @@ jobs:
       - name: Install bumpversion
         run: pip install bumpversion
 
-      - name: Debug - List directory contents
-        run: ls -R
+      #- name: Debug - List directory contents
+      #  run: ls -R
 
       - name: Bump version and push tag
         run: |
-          bumpversion patch --current-version $(cat ${{ matrix.folder }}/VERSION) --allow-dirty --no-tag --config-file .bumpversion.cfg ${{ matrix.folder }}/VERSION
+          bumpversion patch --current-version $(cat ${{ matrix.folder }}/VERSION) --allow-dirty --no-tag --new-version-file ${{ matrix.folder }}/VERSION
           git add ${{ matrix.folder }}/VERSION
           git commit -m "Bump version for ${{ matrix.folder }} to $(cat ${{ matrix.folder }}/VERSION)"
           git tag -a "${{ matrix.folder }}-v$(cat ${{ matrix.folder }}/VERSION)" -m "Version $(cat ${{ matrix.folder }}/VERSION) for ${{ matrix.folder }}"
