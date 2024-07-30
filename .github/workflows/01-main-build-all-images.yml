@@ -1,5 +1,11 @@
 name: 01 - 🔍Discover and Build 🐋 Docker Images
 on:
+##  push:
+##    branches:
+##      - main
+##    paths:
+##      - 'images/**'
+##      - '.github/workflows/01-main-build-all-images.yml'
   workflow_dispatch:
 
 jobs:
