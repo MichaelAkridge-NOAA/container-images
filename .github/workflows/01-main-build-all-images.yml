@@ -17,7 +17,7 @@ jobs:
       - name: Find Dockerfiles
         id: find
         run: |
-          find images draft_images -name Dockerfile | sed 's/\/Dockerfile//' | sed 's/^/.\//' > dockerfile_paths.txt
+          find images -name Dockerfile | sed 's/\/Dockerfile//' | sed 's/^/.\//' > dockerfile_paths.txt
 
       - name: Create JSON matrix
         id: generate-matrix
@@ -33,7 +33,7 @@ jobs:
 
   call-reusable-workflow:
     needs: generate-matrix
-    uses: ./.github/workflows/reusable-build-and-publish-docker-images.yml
+    uses: ./.github/workflows/reusable-build-and-publish.yml
     with:
       artifact_name: dockerfile-paths
       repository: ${{ github.repository }}
