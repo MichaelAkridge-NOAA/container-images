@@ -43,6 +43,13 @@ jobs:
       - name: Set lower case owner name
         run: echo "OWNER_LC=${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]' | awk -F "=" '{print "OWNER_LC="$2}' >> $GITHUB_ENV
 
+      - name: Initialize VERSION file if it doesn't exist
+        run: |
+          VERSION_FILE=${{ matrix.folder }}/VERSION
+          if [ ! -f "$VERSION_FILE" ]; then
+            echo "0.0.0" > $VERSION_FILE
+          fi
+
       - name: Get version
         id: get_version
         run: echo "VERSION=$(cat ${{ matrix.folder }}/VERSION)" >> $GITHUB_ENV
@@ -66,13 +73,16 @@ jobs:
       - name: Install bumpversion
         run: pip install bumpversion
 
-      #- name: Debug - List directory contents
-      #  run: ls -R
-
       - name: Configure Git
         run: |
           git config --global user.email "action@github.com"
           git config --global user.name "GitHub Action"
+
+      #- name: Debug - List directory contents
+      #  run: ls -R
+
+      - name: Debug - Show VERSION file content before bumpversion
+        run: cat ${{ matrix.folder }}/VERSION
 
       - name: Bump version and push tag
         run: |
@@ -83,3 +93,6 @@ jobs:
           git push origin --tags
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Debug - Show VERSION file content after bumpversion
+        run: cat ${{ matrix.folder }}/VERSION
