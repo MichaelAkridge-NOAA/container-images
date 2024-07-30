@@ -69,6 +69,11 @@ jobs:
       #- name: Debug - List directory contents
       #  run: ls -R
 
+      - name: Configure Git
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+
       - name: Bump version and push tag
         run: |
           bumpversion patch --current-version $(cat ${{ matrix.folder }}/VERSION) --allow-dirty --config-file .bumpversion.cfg ${{ matrix.folder }}/VERSION
