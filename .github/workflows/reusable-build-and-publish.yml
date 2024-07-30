@@ -1,4 +1,5 @@
 name: Reusable Build and Publish Docker Images
+
 on:
   workflow_call:
     inputs:

@@ -1,0 +1,27 @@
+name: Generate Matrix and Upload Artifact
+on:
+  workflow_dispatch:
+jobs:
+  generate-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      artifact-name: dockerfile-paths
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Find Dockerfiles
+        id: find
+        run: |
+          find images draft_images -name Dockerfile | sed 's/\/Dockerfile//' | sed 's/^/.\//' > dockerfile_paths.txt
+
+      - name: Create JSON matrix
+        id: set-matrix
+        run: |
+          jq -R . < dockerfile_paths.txt | jq -s . > dockerfile_paths.json
+          cat dockerfile_paths.json
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: dockerfile-paths
+          path: dockerfile_paths.json
