@@ -21,16 +21,10 @@ jobs:
           name: ${{ inputs.artifact_name }}
           path: .
 
-      - name: Read paths
-        id: read-paths
+      - name: Read and iterate paths
         run: |
           paths=$(cat dockerfile_paths.json)
-          echo "paths=$paths" >> $GITHUB_ENV
-
-      - name: Set up Docker build parameters and build/push images
-        run: |
-          folders=$(jq -r '.[]' <<< ${{ env.paths }})
-          for folder in $folders; do
+          for folder in $(echo $paths | jq -r '.[]'); do
             IMAGE_NAME=$(basename $folder)
             echo "Building and pushing $IMAGE_NAME"
             docker build $folder -f $folder/Dockerfile --tag ghcr.io/${{ inputs.repository }}/$IMAGE_NAME:latest --tag ghcr.io/${{ inputs.repository }}/$IMAGE_NAME:${{ github.sha }}
