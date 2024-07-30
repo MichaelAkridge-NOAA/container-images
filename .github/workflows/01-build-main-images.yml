@@ -1,11 +1,11 @@
-name: 02 - 🔍Discover Draft and Build Draft 🐋Docker Images
+name: 01 - 🔍Discover and Build Main 🐋 Docker Images
 on:
 ##  push:
 ##    branches:
 ##      - main
 ##    paths:
-##      - 'draft_images/**'
-##      - '.github/workflows/02-main-build-all-draft-images.yml'
+##      - 'images/**'
+##      - '.github/workflows/01-main-build-all-images.yml'
   workflow_dispatch:
 
 jobs:
@@ -13,11 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-# update for folder with docker iamges "folder draft_images"
+
       - name: Find Dockerfiles
         id: find
         run: |
-          find draft_images -name Dockerfile | sed 's/\/Dockerfile//' | sed 's/^/.\//' > dockerfile_paths.txt
+          find images -name Dockerfile | sed 's/\/Dockerfile//' | sed 's/^/.\//' > dockerfile_paths.txt
           cat dockerfile_paths.txt  # Debug step to ensure paths are found
 
       - name: Create JSON matrix

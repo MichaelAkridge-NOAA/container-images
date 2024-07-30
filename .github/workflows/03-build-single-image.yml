@@ -1,11 +1,11 @@
-name: 01 - 🔍Discover and Build 🐋 Docker Images
+name: 03 - Build Single Project 🐋 Docker Image
 on:
 ##  push:
 ##    branches:
 ##      - main
 ##    paths:
-##      - 'images/**'
-##      - '.github/workflows/01-main-build-all-images.yml'
+##      - 'draft_images/**'
+##      - '.github/workflows/03-build-single-image.yml'
   workflow_dispatch:
 
 jobs:
@@ -13,11 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
+# update for folder with project folder "folder images/jupyter-base-notebook"
       - name: Find Dockerfiles
         id: find
         run: |
-          find images -name Dockerfile | sed 's/\/Dockerfile//' | sed 's/^/.\//' > dockerfile_paths.txt
+          find images/jupyter-base-notebook -name Dockerfile | sed 's/\/Dockerfile//' | sed 's/^/.\//' > dockerfile_paths.txt
           cat dockerfile_paths.txt  # Debug step to ensure paths are found
 
       - name: Create JSON matrix
