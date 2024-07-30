@@ -47,7 +47,7 @@ jobs:
         run: |
           VERSION_FILE=${{ matrix.folder }}/VERSION
           if [ ! -f "$VERSION_FILE" ]; then
-            echo "1.0.0" > $VERSION_FILE
+            echo "0.0.0" > $VERSION_FILE
           fi
 
       - name: Get version
@@ -86,11 +86,10 @@ jobs:
 
       - name: Bump version and push tag
         run: |
-          cd ${{ matrix.folder }}
-          bumpversion patch --current-version $(cat VERSION) --allow-dirty --config-file ../.bumpversion.cfg
-          NEW_VERSION=$(cat VERSION)
+          bumpversion patch --current-version $(cat ${{ matrix.folder }}/VERSION) --allow-dirty --config-file .bumpversion.cfg --list --search "$(cat .bumpversion.cfg | grep 'search =')" --replace "$(cat .bumpversion.cfg | grep 'replace =')" ${{ matrix.folder }}/VERSION
+          NEW_VERSION=$(cat ${{ matrix.folder }}/VERSION)
           echo "New version is $NEW_VERSION"
-          git add VERSION
+          git add ${{ matrix.folder }}/VERSION
           git commit -m "Bump version for ${{ matrix.folder }} to $NEW_VERSION"
           git tag -a "${{ matrix.folder }}-v$NEW_VERSION" -m "Version $NEW_VERSION for ${{ matrix.folder }}"
           git push origin --tags
