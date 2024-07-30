@@ -27,7 +27,7 @@ jobs:
           path: dockerfile_paths.json
 
   call-reusable-workflow:
-    name: 🚀 Build and Publish 🐋 Docker Images
+    name: 🚀 Start Workflow
     needs: generate-matrix
     uses: ./.github/workflows/reusable-build-and-publish.yml
     with:
