@@ -1,5 +1,4 @@
 name: 00-Process Matrix and Build Docker Images
-
 on:
   workflow_run:
     workflows: ["Generate Matrix and Upload Artifact"]
@@ -7,7 +6,32 @@ on:
       - completed
 
 jobs:
-  process-matrix:
+  download-and-process:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: dockerfile-paths
+          path: .
+
+      - name: Read matrix from artifact
+        id: read-matrix
+        run: |
+          matrix=$(cat dockerfile_paths.json)
+          echo "matrix=$matrix" >> $GITHUB_ENV
+          echo "$matrix" | jq -r '.[]' > matrix.txt
+
+      - name: Upload matrix.txt as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: matrix-file
+          path: matrix.txt
+
+  build-and-push:
+    needs: download-and-process
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -15,38 +39,35 @@ jobs:
         folder: []
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
-      - name: Download artifact
-        uses: actions/download-artifact@v4
+      - name: Download matrix.txt artifact
+        uses: actions/download-artifact@v3
         with:
-          name: dockerfile-paths
+          name: matrix-file
           path: .
 
       - name: Set lower case owner name
         run: |
           echo "OWNER_LC=${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]' | awk -F "=" '{print "OWNER_LC="$2}' >> $GITHUB_ENV
 
-      - name: Read matrix from artifact
-        id: read-matrix
+      - name: Set matrix folders
         run: |
-          matrix=$(cat dockerfile_paths.json)
-          echo "matrix=${matrix}" >> $GITHUB_ENV
-          echo "matrix=${matrix}" >> $GITHUB_ENV_PATHS
+          folders=$(cat matrix.txt)
+          echo "folders=$folders" >> $GITHUB_ENV
+          echo "$folders" | jq -R . | jq -s . > matrix.json
 
-      - name: Setup matrix for each folder
-        run: |
-          folders=$(jq -r '.[]' <<< ${{ env.matrix }})
-          echo "folders=${folders}" >> $GITHUB_ENV
-          for folder in $folders; do
-            echo "folder=${folder}" >> $GITHUB_ENV
-          done
-          echo "folders=$(jq -r '.[]' <<< ${{ env.matrix }})" >> $GITHUB_ENV
+      - name: Setup matrix
+        id: setup-matrix
+        run: echo "matrix=$(cat matrix.json)" >> $GITHUB_ENV
 
       - name: Build and push Docker image
         run: |
-          IMAGE_NAME=$(basename ${{ matrix.folder }})
-          echo "Building and pushing $IMAGE_NAME"
-          docker build ${{ matrix.folder }} -f ${{ matrix.folder }}/Dockerfile --tag ghcr.io/${OWNER_LC}/${IMAGE_NAME}:latest --tag ghcr.io/${OWNER_LC}/${IMAGE_NAME}:${{ github.sha }}
-          docker push ghcr.io/${OWNER_LC}/${IMAGE_NAME}:latest
-          docker push ghcr.io/${OWNER_LC}/${IMAGE_NAME}:${{ github.sha }}
+          matrix_folders=$(jq -r '.[]' <<< ${{ env.matrix }})
+          for folder in $matrix_folders; do
+            IMAGE_NAME=$(basename $folder)
+            echo "Building and pushing $IMAGE_NAME"
+            docker build $folder -f $folder/Dockerfile --tag ghcr.io/${OWNER_LC}/${IMAGE_NAME}:latest --tag ghcr.io/${OWNER_LC}/${IMAGE_NAME}:${{ github.sha }}
+            docker push ghcr.io/${OWNER_LC}/${IMAGE_NAME}:latest
+            docker push ghcr.io/${OWNER_LC}/${IMAGE_NAME}:${{ github.sha }}
+          done
