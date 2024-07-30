@@ -8,7 +8,6 @@ on:
       repository:
         required: true
         type: string
-
 jobs:
   download-artifact:
     runs-on: ubuntu-latest
@@ -28,8 +27,8 @@ jobs:
         run: |
           paths=$(cat dockerfile_paths.json)
           paths_serialized=$(echo $paths | jq -c .)
-          echo "::set-output name=paths::$paths_serialized"
-          echo $paths_serialized  # Debug step to ensure paths are correctly read and serialized
+          echo "paths=${paths_serialized}" >> $GITHUB_OUTPUT
+        shell: bash
 
   build-and-push:
     runs-on: ubuntu-latest
