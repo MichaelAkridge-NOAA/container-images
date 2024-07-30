@@ -1,4 +1,4 @@
-name: 02 - Discover and Build Draft Docker Images
+name: 02 - 🔍Discover Draft and Build Draft 🐋Docker Images
 on:
 ##  push:
 ##    branches:
@@ -7,29 +7,35 @@ on:
 ##      - 'draft_images/**'
 ##      - '.github/workflows/02-main-build-all-draft-images.yml'
   workflow_dispatch:
+
 jobs:
   generate-matrix:
     runs-on: ubuntu-latest
-    outputs:
-      paths: ${{ steps.matrix.outputs.paths }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Find Dockerfiles
         id: find
         run: |
-          find draft_images -name Dockerfile | sed 's/\/Dockerfile//' > dockerfile_paths.txt
+          find draft_images -name Dockerfile | sed 's/\/Dockerfile//' | sed 's/^/.\//' > dockerfile_paths.txt
+          cat dockerfile_paths.txt  # Debug step to ensure paths are found
 
       - name: Create JSON matrix
-        id: matrix
+        id: generate-matrix
         run: |
-          paths=$(jq -R . < dockerfile_paths.txt | jq -s .)
-          echo "paths=${paths}"  # Debug line to print the paths
-          echo "::set-output name=paths::${paths}"
+          jq -R . < dockerfile_paths.txt | jq -s . > dockerfile_paths.json
+          cat dockerfile_paths.json  # Debug step to ensure JSON file is created
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dockerfile-paths
+          path: dockerfile_paths.json
 
   call-reusable-workflow:
+    name: 🚀 Build and Publish 🐋 Docker Images
     needs: generate-matrix
     uses: ./.github/workflows/reusable-build-and-publish.yml
     with:
-      dockerfile_paths: ${{ needs.generate-matrix.outputs.paths }}
+      artifact_name: dockerfile-paths
       repository: ${{ github.repository }}
