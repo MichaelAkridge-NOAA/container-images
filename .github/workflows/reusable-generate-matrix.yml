@@ -1,4 +1,4 @@
-name: Generate Matrix and Upload Artifact
+name: Generate Draft Matrix and Upload Artifact
 on:
   workflow_dispatch:
 jobs:
