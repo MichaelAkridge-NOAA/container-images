@@ -1,5 +1,4 @@
 name: Reusable Build and Publish Docker Images
-
 on:
   workflow_call:
     inputs:
@@ -9,7 +8,6 @@ on:
       repository:
         required: true
         type: string
-
 jobs:
   build:
     runs-on: ubuntu-latest
