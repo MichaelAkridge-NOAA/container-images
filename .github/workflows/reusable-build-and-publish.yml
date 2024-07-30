@@ -8,7 +8,6 @@ on:
       repository:
         required: true
         type: string
-
 jobs:
   build:
     runs-on: ubuntu-latest
