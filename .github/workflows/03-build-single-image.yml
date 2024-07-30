@@ -4,7 +4,7 @@ on:
 ##    branches:
 ##      - main
 ##    paths:
-##      - 'draft_images/**'
+##      - 'images/jupyter-base-notebook/**'
 ##      - '.github/workflows/03-build-single-image.yml'
   workflow_dispatch:
 
