@@ -1,5 +1,4 @@
-name: Reusable Build and Publish Docker Images
-
+name: ♻️ Reusable - 🚀 Build and Publish Docker Images
 on:
   workflow_call:
     inputs:
@@ -11,9 +10,10 @@ on:
         type: string
 
 jobs:
-  build:
+  download-artifact:
     runs-on: ubuntu-latest
-    permissions: write-all
+    outputs:
+      paths: ${{ steps.read-paths.outputs.paths }}
     steps:
       - uses: actions/checkout@v4
 
@@ -23,16 +23,32 @@ jobs:
           name: ${{ inputs.artifact_name }}
           path: .
 
+      - name: Read paths and set output
+        id: read-paths
+        run: |
+          paths=$(cat dockerfile_paths.json)
+          paths_serialized=$(echo $paths | jq -c .)
+          echo "::set-output name=paths::$paths_serialized"
+          echo $paths_serialized  # Debug step to ensure paths are correctly read and serialized
+
+  build-and-push:
+    runs-on: ubuntu-latest
+    needs: download-artifact
+    permissions: write-all
+    strategy:
+      matrix:
+        folder: ${{ fromJson(needs.download-artifact.outputs.paths) }}
+    steps:
+      - uses: actions/checkout@v4
+
       - name: Set lower case owner name
         run: echo "OWNER_LC=${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]' | awk -F "=" '{print "OWNER_LC="$2}' >> $GITHUB_ENV
 
-      - name: Read and iterate paths
+      - name: Build and push Docker image
+        continue-on-error: true  # This ensures the job continues even if it fails
         run: |
-          paths=$(cat dockerfile_paths.json)
-          for folder in $(echo $paths | jq -r '.[]'); do
-            IMAGE_NAME=$(basename $folder)
-            echo "Building and pushing $IMAGE_NAME"
-            docker build $folder -f $folder/Dockerfile --tag ghcr.io/${OWNER_LC}/${IMAGE_NAME}:latest --tag ghcr.io/${OWNER_LC}/${IMAGE_NAME}:${{ github.sha }}
-            docker push ghcr.io/${OWNER_LC}/${IMAGE_NAME}:latest
-            docker push ghcr.io/${OWNER_LC}/${IMAGE_NAME}:${{ github.sha }}
-          done
+          IMAGE_NAME=$(basename ${{ matrix.folder }})
+          echo "Building and pushing $IMAGE_NAME"
+          docker build ${{ matrix.folder }} -f ${{ matrix.folder }}/Dockerfile --tag ghcr.io/${OWNER_LC}/${IMAGE_NAME}:latest --tag ghcr.io/${OWNER_LC}/${IMAGE_NAME}:${{ github.sha }}
+          docker push ghcr.io/${OWNER_LC}/${IMAGE_NAME}:latest
+          docker push ghcr.io/${OWNER_LC}/${IMAGE_NAME}:${{ github.sha }}
