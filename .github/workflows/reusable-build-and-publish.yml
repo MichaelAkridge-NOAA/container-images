@@ -4,17 +4,18 @@ on:
     inputs:
       dockerfile_paths:
         required: true
-        type: array
+        type: string
       repository:
         required: true
         type: string
+
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions: write-all
     strategy:
       matrix:
-        folder: ${{ inputs.dockerfile_paths }}
+        folder: ${{ fromJson(inputs.dockerfile_paths) }}
 
     steps:
       - uses: actions/checkout@v3
@@ -28,14 +29,14 @@ jobs:
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
-          username: ${{github.actor}}
-          password: ${{secrets.GITHUB_TOKEN}}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build the Docker image
         run: |
-          docker build ${{ matrix.folder }} -f ${{ matrix.folder }}/Dockerfile --tag ${{ inputs.registry }}/${{ inputs.repository }}/${{ env.IMAGE_NAME }}:latest --tag ${{ inputs.registry }}/${{ inputs.repository }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          docker build ${{ matrix.folder }} -f ${{ matrix.folder }}/Dockerfile --tag ghcr.io/${{ inputs.repository }}/${{ env.IMAGE_NAME }}:latest --tag ghcr.io/${{ inputs.repository }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
       - name: Publish
         run: |
-          docker push ${{ inputs.registry }}/${{ inputs.repository }}/${{ env.IMAGE_NAME }}:latest
-          docker push ${{ inputs.registry }}/${{ inputs.repository }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          docker push ghcr.io/${{ inputs.repository }}/${{ env.IMAGE_NAME }}:latest
+          docker push ghcr.io/${{ inputs.repository }}/${{ env.IMAGE_NAME }}:${{ github.sha }}

@@ -10,6 +10,8 @@ on:
 jobs:
   generate-matrix:
     runs-on: ubuntu-latest
+    outputs:
+      paths: ${{ steps.matrix.outputs.paths }}
     steps:
       - uses: actions/checkout@v3
 
@@ -21,19 +23,12 @@ jobs:
       - name: Create JSON matrix
         id: matrix
         run: |
-          paths=$(cat dockerfile_paths.txt | jq -R . | jq -s .)
-          echo "paths=${paths}" >> $GITHUB_ENV
-
-      - name: Upload matrix file
-        uses: actions/upload-artifact@v3
-        with:
-          name: dockerfile-matrix
-          path: dockerfile_paths.txt
+          paths=$(jq -R . < dockerfile_paths.txt | jq -s .)
+          echo "::set-output name=paths::${paths}"
 
   call-reusable-workflow:
     needs: generate-matrix
-    uses: ./.github/workflows/reusable-build-and-publish.yml
+    uses: ./.github/workflows/reusable-build-and-publish-docker-images.yml
     with:
-      dockerfile_paths: ${{ fromJson(needs.generate-matrix.outputs.paths) }}
-      registry: ghcr.io
+      dockerfile_paths: ${{ needs.generate-matrix.outputs.paths }}
       repository: ${{ github.repository }}
