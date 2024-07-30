@@ -1,15 +1,12 @@
 name: 02 - Discover and Build Draft Docker Images
-
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'images/**'
-      - 'draft_images/**'
-      - '.github/workflows/main-build-all-images.yml'
+##  push:
+##    branches:
+##      - main
+##    paths:
+##      - 'draft_images/**'
+##      - '.github/workflows/02-main-build-all-draft-images.yml'
   workflow_dispatch:
-
 jobs:
   generate-matrix:
     runs-on: ubuntu-latest
@@ -19,7 +16,7 @@ jobs:
       - name: Find Dockerfiles
         id: find
         run: |
-          find images draft_images -name Dockerfile | sed 's/\/Dockerfile//' > dockerfile_paths.txt
+          find draft_images -name Dockerfile | sed 's/\/Dockerfile//' > dockerfile_paths.txt
 
       - name: Create JSON matrix
         id: matrix
@@ -40,5 +37,3 @@ jobs:
       dockerfile_paths: ${{ fromJson(needs.generate-matrix.outputs.paths) }}
       registry: ghcr.io
       repository: ${{ github.repository }}
-      actor: ${{ github.actor }}
-      token: ${{ secrets.GITHUB_TOKEN }}
