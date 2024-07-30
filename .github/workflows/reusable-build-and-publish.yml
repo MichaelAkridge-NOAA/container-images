@@ -1,13 +1,15 @@
 name: Reusable Build and Publish Docker Images
+
 on:
   workflow_call:
     inputs:
-      folder:
+      artifact_name:
         required: true
         type: string
       repository:
         required: true
         type: string
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -15,14 +17,22 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set lower case owner name
-        run: |
-          echo "OWNER_LC=${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]' | awk -F "=" '{print "OWNER_LC="$2}' >> $GITHUB_ENV
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ inputs.artifact_name }}
+          path: .
 
-      - name: Build and push Docker image
+      - name: Set lower case owner name
+        run: echo "OWNER_LC=${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]' | awk -F "=" '{print "OWNER_LC="$2}' >> $GITHUB_ENV
+
+      - name: Read and iterate paths
         run: |
-          IMAGE_NAME=$(basename ${{ inputs.folder }})
-          echo "Building and pushing $IMAGE_NAME"
-          docker build ${{ inputs.folder }} -f ${{ inputs.folder }}/Dockerfile --tag ghcr.io/${OWNER_LC}/${IMAGE_NAME}:latest --tag ghcr.io/${OWNER_LC}/${IMAGE_NAME}:${{ github.sha }}
-          docker push ghcr.io/${OWNER_LC}/${IMAGE_NAME}:latest
-          docker push ghcr.io/${OWNER_LC}/${IMAGE_NAME}:${{ github.sha }}
+          paths=$(cat dockerfile_paths.json)
+          for folder in $(echo $paths | jq -r '.[]'); do
+            IMAGE_NAME=$(basename $folder)
+            echo "Building and pushing $IMAGE_NAME"
+            docker build $folder -f $folder/Dockerfile --tag ghcr.io/${OWNER_LC}/${IMAGE_NAME}:latest --tag ghcr.io/${OWNER_LC}/${IMAGE_NAME}:${{ github.sha }}
+            docker push ghcr.io/${OWNER_LC}/${IMAGE_NAME}:latest
+            docker push ghcr.io/${OWNER_LC}/${IMAGE_NAME}:${{ github.sha }}
+          done

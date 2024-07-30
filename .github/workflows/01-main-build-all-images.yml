@@ -11,23 +11,19 @@ on:
 jobs:
   generate-matrix:
     runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - uses: actions/checkout@v3
 
       - name: Find Dockerfiles
         id: find
         run: |
-          find images -name Dockerfile | sed 's/\/Dockerfile//' | sed 's/^/.\//' > dockerfile_paths.txt
+          find images draft_images -name Dockerfile | sed 's/\/Dockerfile//' | sed 's/^/.\//' > dockerfile_paths.txt
 
       - name: Create JSON matrix
-        id: set-matrix
+        id: generate-matrix
         run: |
-          paths=$(jq -R . < dockerfile_paths.txt | jq -s .)
-          echo "matrix=$paths" >> $GITHUB_ENV
-          echo "matrix=$paths" >> $GITHUB_ENV_PATHS
-          echo "matrix=$paths" > $GITHUB_ENV_PATHS
+          jq -R . < dockerfile_paths.txt | jq -s . > dockerfile_paths.json
+          cat dockerfile_paths.json  # Debug step
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
@@ -37,10 +33,7 @@ jobs:
 
   call-reusable-workflow:
     needs: generate-matrix
-    strategy:
-      matrix:
-        folder: ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
-    uses: ./.github/workflows/reusable-build-and-publish.yml
+    uses: ./.github/workflows/reusable-build-and-publish-docker-images.yml
     with:
-      folder: ${{ matrix.folder }}
+      artifact_name: dockerfile-paths
       repository: ${{ github.repository }}
