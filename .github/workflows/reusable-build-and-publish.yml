@@ -44,6 +44,13 @@ jobs:
       - name: Set lower case owner name
         run: echo "OWNER_LC=${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]' | awk -F "=" '{print "OWNER_LC="$2}' >> $GITHUB_ENV
 
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build and push Docker image
         continue-on-error: true  # This ensures the job continues even if it fails
         run: |
