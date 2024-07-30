@@ -7,14 +7,13 @@ on:
 ##      - 'images/**'
 ##      - '.github/workflows/01-main-build-all-images.yml'
   workflow_dispatch:
-
 jobs:
   generate-matrix:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
       - name: Find Dockerfiles
         id: find
@@ -25,20 +24,21 @@ jobs:
         id: set-matrix
         run: |
           paths=$(jq -R . < dockerfile_paths.txt | jq -s .)
-          echo "::set-output name=matrix::$(echo $paths | jq -c '.[]')"
+          echo "matrix=$paths" >> $GITHUB_ENV
+          echo "::set-output name=matrix::$paths"
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: dockerfile-paths
           path: dockerfile_paths.json
 
   call-reusable-workflow:
     needs: generate-matrix
-    uses: ./.github/workflows/reusable-build-and-publish.yml
-    with:
-      artifact_name: dockerfile-paths
-      repository: ${{ github.repository }}
     strategy:
       matrix:
         folder: ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
+    uses: ./.github/workflows/reusable-build-and-publish.yml
+    with:
+      folder: ${{ matrix.folder }}
+      repository: ${{ github.repository }}
