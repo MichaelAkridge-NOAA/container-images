@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
+# update for folder with docker iamges "folder draft_images"
       - name: Find Dockerfiles
         id: find
         run: |
