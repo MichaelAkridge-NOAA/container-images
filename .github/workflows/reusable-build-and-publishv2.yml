@@ -66,6 +66,9 @@ jobs:
       - name: Install bumpversion
         run: pip install bumpversion
 
+      - name: Debug - List directory contents
+        run: ls -R
+
       - name: Bump version and push tag
         run: |
           bumpversion patch --current-version $(cat ${{ matrix.folder }}/VERSION) --allow-dirty --no-tag --config-file .bumpversion.cfg ${{ matrix.folder }}/VERSION
