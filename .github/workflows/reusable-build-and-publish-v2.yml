@@ -1,4 +1,4 @@
-name: v2 Reusable Build and Publish Docker Images
+name: v2- Reusable Build and Publish Docker Images
 on:
   workflow_call:
     inputs:
@@ -12,6 +12,8 @@ on:
 jobs:
   download-artifact:
     runs-on: ubuntu-latest
+    outputs:
+      paths: ${{ steps.read-paths.outputs.paths }}
     steps:
       - uses: actions/checkout@v4
 
