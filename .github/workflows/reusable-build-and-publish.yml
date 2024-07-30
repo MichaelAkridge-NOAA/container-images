@@ -12,25 +12,27 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions: write-all
+    strategy:
+      matrix:
+        folder: []
+
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.artifact_name }}
           path: .
 
       - name: Set lower case owner name
-        run: echo "OWNER_LC=${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]' | awk -F "=" '{print "OWNER_LC="$2}' >> $GITHUB_ENV
-
-      - name: Read and iterate paths
         run: |
-          paths=$(cat dockerfile_paths.json)
-          for folder in $(echo $paths | jq -r '.[]'); do
-            IMAGE_NAME=$(basename $folder)
-            echo "Building and pushing $IMAGE_NAME"
-            docker build $folder -f $folder/Dockerfile --tag ghcr.io/${OWNER_LC}/${IMAGE_NAME}:latest --tag ghcr.io/${OWNER_LC}/${IMAGE_NAME}:${{ github.sha }}
-            docker push ghcr.io/${OWNER_LC}/${IMAGE_NAME}:latest
-            docker push ghcr.io/${OWNER_LC}/${IMAGE_NAME}:${{ github.sha }}
-          done
+          echo "OWNER_LC=${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]' | awk -F "=" '{print "OWNER_LC="$2}' >> $GITHUB_ENV
+
+      - name: Build and push Docker image
+        run: |
+          IMAGE_NAME=$(basename ${{ matrix.folder }})
+          echo "Building and pushing $IMAGE_NAME"
+          docker build ${{ matrix.folder }} -f ${{ matrix.folder }}/Dockerfile --tag ghcr.io/${OWNER_LC}/${IMAGE_NAME}:latest --tag ghcr.io/${OWNER_LC}/${IMAGE_NAME}:${{ github.sha }}
+          docker push ghcr.io/${OWNER_LC}/${IMAGE_NAME}:latest
+          docker push ghcr.io/${OWNER_LC}/${IMAGE_NAME}:${{ github.sha }}
