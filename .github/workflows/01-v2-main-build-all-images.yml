@@ -12,12 +12,13 @@ jobs:
         id: find
         run: |
           find images -name Dockerfile | sed 's/\/Dockerfile//' | sed 's/^/.\//' > dockerfile_paths.txt
+          cat dockerfile_paths.txt  # Debug step to ensure paths are found
 
       - name: Create JSON matrix
         id: generate-matrix
         run: |
           jq -R . < dockerfile_paths.txt | jq -s . > dockerfile_paths.json
-          cat dockerfile_paths.json  # Debug step
+          cat dockerfile_paths.json  # Debug step to ensure JSON file is created
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
