@@ -1,0 +1,41 @@
+name: 04 - test Build Single Project 🐋 Docker Image
+on:
+##  push:
+##    branches:
+##      - main
+##    paths:
+##      - 'images/jupyter-base-notebook/**'
+##      - '.github/workflows/03-build-single-image.yml'
+  workflow_dispatch:
+
+jobs:
+  generate-matrix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+# update for folder with project folder "folder images/jupyter-base-notebook"
+      - name: Find Dockerfiles
+        id: find
+        run: |
+          find images/jupyter-base-notebook -name Dockerfile | sed 's/\/Dockerfile//' | sed 's/^/.\//' > dockerfile_paths.txt
+          cat dockerfile_paths.txt  # Debug step to ensure paths are found
+
+      - name: Create JSON matrix
+        id: generate-matrix
+        run: |
+          jq -R . < dockerfile_paths.txt | jq -s . > dockerfile_paths.json
+          cat dockerfile_paths.json  # Debug step to ensure JSON file is created
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dockerfile-paths
+          path: dockerfile_paths.json
+
+  call-reusable-workflow:
+    name: 🚀 Start Workflow
+    needs: generate-matrix
+    uses: ./.github/workflows/reusable-build-and-publishv2.yml
+    with:
+      artifact_name: dockerfile-paths
+      repository: ${{ github.repository }}
