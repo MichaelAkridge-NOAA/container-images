@@ -1,37 +1,47 @@
 name: 03 - Build Single 🐋 Docker Image
 on:
-##  push:
-##    branches:
-##      - main
-##    paths:
-##      - 'images/jupyter-base-notebook/**'
-##      - '.github/workflows/03-build-single-image.yml'
+  # Uncomment the lines below to trigger the workflow on push to the main branch
+  ## push:
+  ##   branches:
+  ##     - main
+  ##   paths:
+  ##     - 'images/jupyter-base-notebook/**'
+  ##     - '.github/workflows/03-build-single-image.yml'
   workflow_dispatch:
-
 jobs:
   generate-matrix:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-# update for folder with project folder "folder images/jupyter-base-notebook"
+        # Step to checkout the repository
+
+      # Step to find Dockerfiles in the specified project folder
       - name: Find Dockerfiles
         id: find
         run: |
           find images/py-rocket-base -name Dockerfile | sed 's/\/Dockerfile//' | sed 's/^/.\//' > dockerfile_paths.txt
           cat dockerfile_paths.txt  # Debug step to ensure paths are found
+          # This command finds all Dockerfiles in the images/py-rocket-base folder,
+          # modifies the paths, and stores them in dockerfile_paths.txt
 
+      # Step to create a JSON matrix from the found Dockerfile paths
       - name: Create JSON matrix
         id: generate-matrix
         run: |
           jq -R . < dockerfile_paths.txt | jq -s . > dockerfile_paths.json
           cat dockerfile_paths.json  # Debug step to ensure JSON file is created
+          # This command converts the paths in dockerfile_paths.txt to a JSON array
+          # and saves it as dockerfile_paths.json
 
+      # Step to upload the JSON matrix as an artifact
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: dockerfile-paths
           path: dockerfile_paths.json
+          # This uploads dockerfile_paths.json as an artifact named dockerfile-paths
 
+  # Step to call the reusable workflow with the uploaded artifact
   call-reusable-workflow:
     name: 🚀 Start Workflow
     needs: generate-matrix
@@ -39,3 +49,5 @@ jobs:
     with:
       artifact_name: dockerfile-paths
       repository: ${{ github.repository }}
+      # This triggers the reusable workflow, passing the dockerfile-paths artifact
+      # and the repository name as inputs
