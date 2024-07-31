@@ -13,9 +13,10 @@ jobs:
     name: 🔍 Find Dockerfiles and Create Matrix
     uses: ./.github/workflows/reusable-find-dockerfiles.yml
     with:
-      base_folder: 'images/jupyter-base-notebook'
+      base_folder: 'draft_images/arcgis-pangeo'
       artifact_name: 'dockerfile-paths'
       # Calls the reusable workflow to find Dockerfiles and create a matrix
+      # base_folder: 'images/jupyter-base-notebook'
 
   # Step to call the reusable workflow with the uploaded artifact
   call-reusable-workflow:
