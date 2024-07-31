@@ -9,10 +9,10 @@ on:
   ##     - '.github/workflows/02-main-build-all-draft-images.yml'
   workflow_dispatch:
 jobs:
-  
+
   # Step to find Dockerfiles in the draft_images folder
   generate-matrix:
-    name: Find Dockerfiles and Create Matrix
+    name: 🔍 Find Dockerfiles and Create Matrix
     uses: ./.github/workflows/reusable-find-dockerfiles.yml
     with:
       base_folder: 'draft_images'

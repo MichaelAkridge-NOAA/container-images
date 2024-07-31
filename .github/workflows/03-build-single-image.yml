@@ -10,6 +10,7 @@ on:
   workflow_dispatch:
 jobs:
   generate-matrix:
+    name: 🔍 Find Dockerfiles and Create Matrix
     uses: ./.github/workflows/reusable-find-dockerfiles.yml
     with:
       base_folder: 'images/jupyter-base-notebook'
