@@ -52,10 +52,12 @@ jobs:
 
       - name: Create dynamic bumpversion config
         run: |
-          cp .bumpversion.cfg .bumpversion_dynamic.cfg
-          echo "[bumpversion:file:${{ matrix.folder }}/VERSION]" >> .bumpversion_dynamic.cfg
+          echo "[bumpversion:file:${{ matrix.folder }}/VERSION]" > .bumpversion_dynamic.cfg
           echo "search = {current_version}" >> .bumpversion_dynamic.cfg
           echo "replace = {new_version}" >> .bumpversion_dynamic.cfg
+
+      - name: Debug - Print dynamic bumpversion config
+        run: cat .bumpversion_dynamic.cfg
 
       - name: Get version
         id: get_version
