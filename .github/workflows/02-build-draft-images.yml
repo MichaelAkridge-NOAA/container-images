@@ -19,7 +19,7 @@ jobs:
       artifact_name: 'dockerfile-paths'
       # Calls the reusable workflow to find Dockerfiles and create a matrix
 
-  # Step to call the reusable workflow with the uploaded artifact
+  # Step to call the reusable workflow with the uploaded dockerfile list artifact
   call-reusable-workflow:
     name: 🚀 Start Workflow
     needs: generate-matrix
