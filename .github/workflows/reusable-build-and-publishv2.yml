@@ -47,12 +47,15 @@ jobs:
         run: |
           VERSION_FILE=${{ matrix.folder }}/VERSION
           if [ ! -f "$VERSION_FILE" ]; then
-            echo "0.0.0" > $VERSION_FILE
+            echo "1.0.0" > $VERSION_FILE
           fi
 
       - name: Create dynamic bumpversion config
         run: |
-          echo "[bumpversion:file:${{ matrix.folder }}/VERSION]" > .bumpversion_dynamic.cfg
+          echo "[bumpversion]" > .bumpversion_dynamic.cfg
+          echo "commit = False" >> .bumpversion_dynamic.cfg
+          echo "tag = False" >> .bumpversion_dynamic.cfg
+          echo "[bumpversion:file:${{ matrix.folder }}/VERSION]" >> .bumpversion_dynamic.cfg
           echo "search = {current_version}" >> .bumpversion_dynamic.cfg
           echo "replace = {new_version}" >> .bumpversion_dynamic.cfg
 
@@ -104,12 +107,18 @@ jobs:
           fi
           echo "VERSION file exists"
 
-      - name: Bump version and push tag
+      - name: Bump version
         run: |
           echo "Updating version in ${{ matrix.folder }}/VERSION"
-          bumpversion patch --current-version $(cat ${{ matrix.folder }}/VERSION) --allow-dirty --config-file .bumpversion_dynamic.cfg --commit --tag
+          bumpversion patch --current-version $(cat ${{ matrix.folder }}/VERSION) --allow-dirty --config-file .bumpversion_dynamic.cfg
           NEW_VERSION=$(cat ${{ matrix.folder }}/VERSION)
           echo "New version is $NEW_VERSION"
+
+      - name: Commit and push changes
+        run: |
+          git add ${{ matrix.folder }}/VERSION
+          git commit -m "Bump version for ${{ matrix.folder }} to $NEW_VERSION"
+          git tag -a "${{ matrix.folder }}-v$NEW_VERSION" -m "Version $NEW_VERSION for ${{ matrix.folder }}"
           git push origin --tags
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
