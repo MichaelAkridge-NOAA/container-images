@@ -17,7 +17,7 @@ jobs:
       - name: Find Dockerfiles
         id: find
         run: |
-          find images/jupyter-base-notebook -name Dockerfile | sed 's/\/Dockerfile//' | sed 's/^/.\//' > dockerfile_paths.txt
+          find images/py-rocket-base -name Dockerfile | sed 's/\/Dockerfile//' | sed 's/^/.\//' > dockerfile_paths.txt
           cat dockerfile_paths.txt  # Debug step to ensure paths are found
 
       - name: Create JSON matrix
