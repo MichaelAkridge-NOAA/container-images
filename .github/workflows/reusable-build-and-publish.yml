@@ -43,6 +43,26 @@ jobs:
       - name: Set lower case owner name
         run: echo "OWNER_LC=${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]' | awk -F "=" '{print "OWNER_LC="$2}' >> $GITHUB_ENV
 
+      - name: Initialize VERSION file if it doesn't exist
+        run: |
+          VERSION_FILE=${{ matrix.folder }}/VERSION
+          if [ ! -f "$VERSION_FILE" ]; then
+            echo "1.0.0" > $VERSION_FILE
+          fi
+
+      - name: Create dynamic bumpversion config
+        run: |
+          echo "[bumpversion]" > .bumpversion_dynamic.cfg
+          echo "commit = False" >> .bumpversion_dynamic.cfg
+          echo "tag = False" >> .bumpversion_dynamic.cfg
+          echo "[bumpversion:file:${{ matrix.folder }}/VERSION]" >> .bumpversion_dynamic.cfg
+          echo "search = {current_version}" >> .bumpversion_dynamic.cfg
+          echo "replace = {new_version}" >> .bumpversion_dynamic.cfg
+
+      - name: Get version
+        id: get_version
+        run: echo "VERSION=$(cat ${{ matrix.folder }}/VERSION)" >> $GITHUB_ENV
+
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -51,10 +71,35 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image
-        continue-on-error: true  # This ensures the job continues even if it fails
         run: |
           IMAGE_NAME=$(basename ${{ matrix.folder }})
           echo "Building and pushing $IMAGE_NAME"
-          docker build ${{ matrix.folder }} -f ${{ matrix.folder }}/Dockerfile --tag ghcr.io/${OWNER_LC}/${IMAGE_NAME}:latest --tag ghcr.io/${OWNER_LC}/${IMAGE_NAME}:${{ github.sha }}
+          docker build ${{ matrix.folder }} -f ${{ matrix.folder }}/Dockerfile --tag ghcr.io/${OWNER_LC}/${IMAGE_NAME}:latest --tag ghcr.io/${OWNER_LC}/${IMAGE_NAME}:${{ env.VERSION }} --tag ghcr.io/${OWNER_LC}/${IMAGE_NAME}:${{ github.sha }}
           docker push ghcr.io/${OWNER_LC}/${IMAGE_NAME}:latest
+          docker push ghcr.io/${OWNER_LC}/${IMAGE_NAME}:${{ env.VERSION }}
           docker push ghcr.io/${OWNER_LC}/${IMAGE_NAME}:${{ github.sha }}
+
+      - name: Install bumpversion
+        run: pip install bumpversion
+
+      - name: Bump version
+        run: |
+          echo "Updating version in ${{ matrix.folder }}/VERSION"
+          bumpversion patch --current-version $(cat ${{ matrix.folder }}/VERSION) --allow-dirty --config-file .bumpversion_dynamic.cfg
+          NEW_VERSION=$(cat ${{ matrix.folder }}/VERSION)
+          echo "New version is $NEW_VERSION"
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+
+      - name: Commit and push changes
+        run: |
+          git add ${{ matrix.folder }}/VERSION
+          git commit -m "Bump version for ${{ matrix.folder }} to ${{ env.NEW_VERSION }}"
+          git push origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NEW_VERSION: ${{ env.NEW_VERSION }}
