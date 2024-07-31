@@ -1,0 +1,42 @@
+name: ♻️ Reusable - Find Dockerfiles and Create Matrix
+on:
+  workflow_call:
+    inputs:
+      base_folder:
+        required: true
+        type: string
+      artifact_name:
+        required: true
+        type: string
+jobs:
+  find-dockerfiles:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        # Step to checkout the repository
+
+      # Step to find Dockerfiles in the specified base folder
+      - name: Find Dockerfiles
+        id: find
+        run: |
+          find ${{ inputs.base_folder }} -name Dockerfile | sed 's/\/Dockerfile//' | sed 's/^/.\//' > dockerfile_paths.txt
+          cat dockerfile_paths.txt  # Debug step to ensure paths are found
+          # This command finds all Dockerfiles in the specified base folder,
+          # modifies the paths, and stores them in dockerfile_paths.txt
+
+      # Step to create a JSON matrix from the found Dockerfile paths
+      - name: Create JSON matrix
+        id: generate-matrix
+        run: |
+          jq -R . < dockerfile_paths.txt | jq -s . > dockerfile_paths.json
+          cat dockerfile_paths.json  # Debug step to ensure JSON file is created
+          # This command converts the paths in dockerfile_paths.txt to a JSON array
+          # and saves it as dockerfile_paths.json
+
+      # Step to upload the JSON matrix as an artifact
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.artifact_name }}
+          path: dockerfile_paths.json
+          # This uploads dockerfile_paths.json as an artifact named based on the input
