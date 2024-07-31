@@ -79,7 +79,7 @@ jobs:
           echo "[bumpversion:file:${{ matrix.folder }}/VERSION]" >> .bumpversion_dynamic.cfg
           echo "search = {current_version}" >> .bumpversion_dynamic.cfg
           echo "replace = {new_version}" >> .bumpversion_dynamic.cfg
-          if [[ "$IMAGE_NAME" == "py-rocket-base" ]]; then
+          if [[ "${{ matrix.folder }}" == "./images/py-rocket-base" ]]; then
             echo "parse = (?P<major>\d+)\.(?P<minor>\d+)-(?P<patch>\d+)" >> .bumpversion_dynamic.cfg
             echo "serialize = {major}.{minor}-{patch}" >> .bumpversion_dynamic.cfg
           else
