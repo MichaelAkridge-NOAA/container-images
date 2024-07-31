@@ -90,8 +90,8 @@ jobs:
           git config --global user.email "action@github.com"
           git config --global user.name "GitHub Action"
 
-      #- name: Debug - List directory contents
-      #  run: ls -R
+      # - name: Debug - List all files
+      #   run: ls -R
 
       # - name: Debug - List files under matrix folder
       #   run: ls -R ${{ matrix.folder }}
