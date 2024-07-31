@@ -96,8 +96,8 @@ jobs:
       # - name: Debug - List files under matrix folder
       #   run: ls -R ${{ matrix.folder }}
 
-      - name: Debug - Show VERSION file content before bumpversion
-        run: cat ${{ matrix.folder }}/VERSION
+      #- name: Debug - Show VERSION file content before bumpversion
+      #  run: cat ${{ matrix.folder }}/VERSION
 
       # - name: Verify VERSION file exists
       #   run: |
@@ -115,8 +115,8 @@ jobs:
           echo "New version is $NEW_VERSION"
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
   
-      - name: Debug - Show VERSION file content after bumpversion
-        run: cat ${{ matrix.folder }}/VERSION
+      #- name: Debug - Show VERSION file content after bumpversion
+      #  run: cat ${{ matrix.folder }}/VERSION
   
       #- name: Sanitize tag name
       #  id: sanitize_tag_name
