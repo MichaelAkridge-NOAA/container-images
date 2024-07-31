@@ -1,4 +1,4 @@
-name: ♻️ Reusable - 🚀 Build and Publish Docker Images
+name: ♻️ Reusable - 🚀 Build/Publish/Tag/Version Docker Images
 on:
   workflow_call:
     inputs:

@@ -1,4 +1,4 @@
-name: 02 - 🔍Discover & Build Draft 🐋Docker Images
+name: 02 - Build Draft 🐋 Docker Images
 on:
 ##  push:
 ##    branches:

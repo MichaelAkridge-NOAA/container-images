@@ -1,4 +1,4 @@
-name: 01 - 🔍Discover and Build Main 🐋 Docker Images
+name: 01 - Build Main 🐋 Docker Images
 on:
 ##  push:
 ##    branches:

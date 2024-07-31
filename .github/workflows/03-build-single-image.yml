@@ -1,4 +1,4 @@
-name: 03 - Build Single Project 🐋 Docker Image
+name: 03 - Build Single 🐋 Docker Image
 on:
 ##  push:
 ##    branches:
