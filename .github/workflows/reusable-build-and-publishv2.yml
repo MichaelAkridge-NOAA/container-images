@@ -50,6 +50,13 @@ jobs:
             echo "0.0.0" > $VERSION_FILE
           fi
 
+      - name: Create dynamic bumpversion config
+        run: |
+          cp .bumpversion.cfg .bumpversion_dynamic.cfg
+          echo "[bumpversion:file:${{ matrix.folder }}/VERSION]" >> .bumpversion_dynamic.cfg
+          echo "search = {current_version}" >> .bumpversion_dynamic.cfg
+          echo "replace = {new_version}" >> .bumpversion_dynamic.cfg
+
       - name: Get version
         id: get_version
         run: echo "VERSION=$(cat ${{ matrix.folder }}/VERSION)" >> $GITHUB_ENV
@@ -98,7 +105,7 @@ jobs:
       - name: Bump version and push tag
         run: |
           echo "Updating version in ${{ matrix.folder }}/VERSION"
-          bumpversion patch --current-version $(cat ${{ matrix.folder }}/VERSION) --allow-dirty --config-file .bumpversion.cfg --commit --tag
+          bumpversion patch --current-version $(cat ${{ matrix.folder }}/VERSION) --allow-dirty --config-file .bumpversion_dynamic.cfg --commit --tag
           NEW_VERSION=$(cat ${{ matrix.folder }}/VERSION)
           echo "New version is $NEW_VERSION"
           git push origin --tags
