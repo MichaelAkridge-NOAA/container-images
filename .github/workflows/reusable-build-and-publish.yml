@@ -60,14 +60,14 @@ jobs:
           fi
 
       # Step to create a dynamic bumpversion configuration
-      - name: Create dynamic bumpversion config
-        run: |
-          echo "[bumpversion]" > .bumpversion_dynamic.cfg
-          echo "commit = False" >> .bumpversion_dynamic.cfg
-          echo "tag = False" >> .bumpversion_dynamic.cfg
-          echo "[bumpversion:file:${{ matrix.folder }}/VERSION]" >> .bumpversion_dynamic.cfg
-          echo "search = {current_version}" >> .bumpversion_dynamic.cfg
-          echo "replace = {new_version}" >> .bumpversion_dynamic.cfg
+      #- name: Create dynamic bumpversion config
+      #  run: |
+      #    echo "[bumpversion]" > .bumpversion_dynamic.cfg
+      #    echo "commit = False" >> .bumpversion_dynamic.cfg
+      #    echo "tag = False" >> .bumpversion_dynamic.cfg
+      #    echo "[bumpversion:file:${{ matrix.folder }}/VERSION]" >> .bumpversion_dynamic.cfg
+      #    echo "search = {current_version}" >> .bumpversion_dynamic.cfg
+      #    echo "replace = {new_version}" >> .bumpversion_dynamic.cfg
 
       # Step to create a dynamic bumpversion config based on the image name
       - name: Create dynamic bumpversion config
