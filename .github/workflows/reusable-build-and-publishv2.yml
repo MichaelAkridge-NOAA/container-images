@@ -96,8 +96,8 @@ jobs:
       # - name: Debug - List files under matrix folder
       #   run: ls -R ${{ matrix.folder }}
 
-      # - name: Debug - Show VERSION file content before bumpversion
-      #   run: cat ${{ matrix.folder }}/VERSION
+      - name: Debug - Show VERSION file content before bumpversion
+        run: cat ${{ matrix.folder }}/VERSION
 
       # - name: Verify VERSION file exists
       #   run: |
@@ -132,5 +132,5 @@ jobs:
           NEW_VERSION: ${{ env.NEW_VERSION }}
           SANITIZED_TAG: ${{ env.SANITIZED_TAG }}
 
-      #- name: Debug - Show VERSION file content after bumpversion
-      #  run: cat ${{ matrix.folder }}/VERSION
+      - name: Debug - Show VERSION file content after bumpversion
+        run: cat ${{ matrix.folder }}/VERSION
