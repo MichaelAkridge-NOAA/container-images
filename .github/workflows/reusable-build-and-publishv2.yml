@@ -118,9 +118,9 @@ jobs:
       - name: Sanitize tag name
         id: sanitize_tag_name
         run: |
-          SANITIZED_TAG=$(echo "${{ matrix.folder }}-v${{ env.NEW_VERSION }}" | sed 's/[^a-zA-Z0-9_-]/-/g')
+          SANITIZED_TAG=$(echo "${{ matrix.folder }}-v${{ env.NEW_VERSION }}" | sed 's/[^a-zA-Z0-9_-]/-/g' | sed 's/^-*//')
           echo "SANITIZED_TAG=$SANITIZED_TAG" >> $GITHUB_ENV
-
+  
       - name: Commit and push changes
         run: |
           git add ${{ matrix.folder }}/VERSION
