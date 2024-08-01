@@ -88,31 +88,29 @@ jobs:
           docker push ghcr.io/${OWNER_LC}/container-images/${IMAGE_NAME}:${{ github.sha }}
         # This builds the Docker image and tags it with the latest version, current version, and commit SHA
 
-      # Step to install bumpversion
-      - name: Install bump2version
+      - name: Create bumpversion config
+        run: |
+          echo '[tool.bumpversion]' > .bumpversion.toml
+          echo 'allow_dirty = true' >> .bumpversion.toml
+          echo 'commit = false' >> .bumpversion.toml
+          echo 'current_version = "$(cat ${{ matrix.folder }}/VERSION)"' >> .bumpversion.toml
+          echo 'parse = "(?P<major>\\\\d+)\\\\.(?P<minor>\\\\d+)-(?P<patch>\\\\d+)\\\\.(?P<build>\\\\d+)"' >> .bumpversion.toml
+          echo 'serialize = ["{major}.{minor}-{patch}.{build}"]' >> .bumpversion.toml
+          echo 'search = "{current_version}"' >> .bumpversion.toml
+          echo 'replace = "{new_version}"' >> .bumpversion.toml
+          echo '[tool.bumpversion.part.build]' >> .bumpversion.toml
+          echo 'independent = true' >> .bumpversion.toml
+          echo '[[tool.bumpversion.files]]' >> .bumpversion.toml
+          echo 'filename = "${{ matrix.folder }}/VERSION"' >> .bumpversion.toml
+
+      - name: Install bump-my-version
         run: pip install --upgrade bump-my-version
 
-      # Step to Bump Version
       - name: Bump version
         run: |
           IMAGE_NAME=$(basename ${{ matrix.folder }})
-          MATRIX_FOLDER="${{ matrix.folder }}"
-          CURRENT_VERSION=$(cat $MATRIX_FOLDER/VERSION)
-          echo "Current version: $CURRENT_VERSION"
-          if [[ "$MATRIX_FOLDER" == "./images/py-rocket-base" ]]; then
-            PARSE_REGEX="(?P<major>\d+)\.(?P<minor>\d+)\-(?P<patch>\d+)\.(?P<build>\d+)"
-            SERIALIZE_FORMAT="{major}.{minor}-{patch}.{build}"
-            PART="build"
-          else
-            PARSE_REGEX="(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)"
-            SERIALIZE_FORMAT="{major}.{minor}.{patch}"
-            PART="patch"
-          fi
-          echo "Using parse regex: $PARSE_REGEX"
-          echo "Using serialize format: $SERIALIZE_FORMAT"
-
-          bump-my-version bump --current-version $CURRENT_VERSION --allow-dirty --parse "$PARSE_REGEX" --serialize "$SERIALIZE_FORMAT" $PART
-          NEW_VERSION=$(cat $MATRIX_FOLDER/VERSION)
+          bump-my-version bump --config-file .bumpversion.toml build
+          NEW_VERSION=$(cat ${{ matrix.folder }}/VERSION)
           echo "New version is $NEW_VERSION"
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
       # Step to configure Git
