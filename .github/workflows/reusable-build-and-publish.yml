@@ -80,8 +80,8 @@ jobs:
           echo "[tool.bumpversion.file]" >> .bumpversion.toml
           echo "file = '${MATRIX_FOLDER}/VERSION'" >> .bumpversion.toml
           if [ "$MATRIX_FOLDER" == "./images/py-rocket-base" ]; then
-            echo "parse = '(?P<major>\\d+)\\.(?P<minor>\\d+)-(?P<patch>\\d+\\.\\d+)'" >> .bumpversion.toml
-            echo "serialize = ['{major}.{minor}-{patch}']" >> .bumpversion.toml
+            echo 'parse = """(?x)\n    (?P<major>0|[1-9]\d*)\\.\n    (?P<minor>0|[1-9]\d*)\n    -\n    (?P<patch>0|[1-9]\d*)\\.\n    (?P<build>0|[1-9]\d*)\n"""' >> .bumpversion.toml
+            echo 'serialize = ["{major}.{minor}-{patch}.{build}"]' >> .bumpversion.toml
           else
             echo "parse = '(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)'" >> .bumpversion.toml
             echo "serialize = ['{major}.{minor}.{patch}']" >> .bumpversion.toml
@@ -129,14 +129,14 @@ jobs:
       - name: Bump version
         run: |
           echo "Updating version in ${{ matrix.folder }}/VERSION"
-          bump-my-version bump --part patch --config .bumpversion.toml
+          bump-my-version bump patch --config .bumpversion.toml
           NEW_VERSION=$(cat ${{ matrix.folder }}/VERSION)
           echo "New version is $NEW_VERSION"
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       # Debug step to print the new version
       - name: Debug new version
-        run: |
+        run: | 
           echo "New version set in VERSION file: $(cat ${{ matrix.folder }}/VERSION)"
 
       # Step to configure Git
