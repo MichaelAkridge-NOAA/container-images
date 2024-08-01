@@ -49,7 +49,8 @@ jobs:
 
       # Step to set the repository owner name in lowercase 
       - name: Set lower case owner name
-        run: echo "OWNER_LC=${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]' | awk -F "=" '{print "OWNER_LC="$2}' >> $GITHUB_ENV
+        run: |
+          echo "OWNER_LC=${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]' | awk -F "=" '{print "OWNER_LC="$2}' >> $GITHUB_ENV
 
       # Step to initialize the VERSION file if it doesn't exist
       - name: Initialize VERSION file if it doesn't exist
@@ -58,50 +59,45 @@ jobs:
           if [ ! -f "$VERSION_FILE" ]; then
             echo "1.0.0" > $VERSION_FILE
           fi
+
       # Debug step to print matrix folder
       - name: Debug matrix folder
-        run: | 
+        run: |
           echo "Matrix folder: ${{ matrix.folder }}"
-
-      # Step to create a dynamic bumpversion configuration
-      #- name: Create dynamic bumpversion config
-      #  run: |
-      #    echo "[bumpversion]" > .bumpversion_dynamic.cfg
-      #    echo "commit = False" >> .bumpversion_dynamic.cfg
-      #    echo "tag = False" >> .bumpversion_dynamic.cfg
-      #    echo "[bumpversion:file:${{ matrix.folder }}/VERSION]" >> .bumpversion_dynamic.cfg
-      #    echo "search = {current_version}" >> .bumpversion_dynamic.cfg
-      #    echo "replace = {new_version}" >> .bumpversion_dynamic.cfg
 
       # Step to create a dynamic bumpversion configuration
       - name: Create dynamic bumpversion config
         run: |
           IMAGE_NAME=$(basename ${{ matrix.folder }})
           MATRIX_FOLDER="${{ matrix.folder }}"
-          echo "[bumpversion]" > .bumpversion_dynamic.cfg
-          echo "commit = False" >> .bumpversion_dynamic.cfg
-          echo "tag = False" >> .bumpversion_dynamic.cfg
-          echo "[bumpversion:file:${MATRIX_FOLDER}/VERSION]" >> .bumpversion_dynamic.cfg
-          echo "search = {current_version}" >> .bumpversion_dynamic.cfg
-          echo "replace = {new_version}" >> .bumpversion_dynamic.cfg
-          if [[ "$MATRIX_FOLDER" == "./images/py-rocket-base" ]]; then
-            echo "parse = (?P<major>\d+)\.(?P<minor>\d+)-(?P<patch>\d+\.\d+)" >> .bumpversion_dynamic.cfg
-            echo "serialize = {major}.{minor}-{patch}" >> .bumpversion_dynamic.cfg
+          echo "[tool.bumpversion]" > .bumpversion.toml
+          echo "current_version = \"$(cat ${MATRIX_FOLDER}/VERSION)\"" >> .bumpversion.toml
+          echo "commit = false" >> .bumpversion.toml
+          echo "tag = false" >> .bumpversion.toml
+          echo "message = \"Bump version: {current_version} → {new_version}\"" >> .bumpversion.toml
+          echo "[tool.bumpversion.file]" >> .bumpversion.toml
+          echo "file = \"${MATRIX_FOLDER}/VERSION\"" >> .bumpversion.toml
+          if [ "$MATRIX_FOLDER" == "./images/py-rocket-base" ]; then
+            echo "parse = \"(?P<major>\\d+)\\.(?P<minor>\\d+)-(?P<patch>\\d+\\.\\d+)\"" >> .bumpversion.toml
+            echo "serialize = [\"{major}.{minor}-{patch}\"]" >> .bumpversion.toml
           else
-            echo "parse = (?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)" >> .bumpversion_dynamic.cfg
-            echo "serialize = {major}.{minor}.{patch}" >> .bumpversion_dynamic.cfg
+            echo "parse = \"(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)\"" >> .bumpversion.toml
+            echo "serialize = [\"{major}.{minor}.{patch}\"]" >> .bumpversion.toml
           fi
           echo "Generated bumpversion config:"
-          cat .bumpversion_dynamic.cfg
-  
+          cat .bumpversion.toml
+
       # Debug step to print bumpversion config
       - name: Debug bumpversion config
-        run: cat .bumpversion_dynamic.cfg
+        run: cat .bumpversion.toml
 
       # Step to get the current version from the VERSION file
       - name: Get version
         id: get_version
-        run: echo "VERSION=$(cat ${{ matrix.folder }}/VERSION)" >> $GITHUB_ENV
+        run: |
+          VERSION=$(cat ${{ matrix.folder }}/VERSION)
+          echo "Current VERSION: $VERSION"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       # Step to login to GitHub Container Registry
       - name: Login to GitHub Container Registry
@@ -123,18 +119,22 @@ jobs:
           docker push ghcr.io/${OWNER_LC}/container-images/${IMAGE_NAME}:${{ github.sha }}
         # This builds the Docker image and tags it with the latest version, current version, and commit SHA
 
-      # Step to install bumpversion
-      - name: Install bumpversion
-        run: pip install bumpversion
+      # Step to install bump-my-version
+      - name: Install bump-my-version
+        run: pip install bump-my-version
 
       # Step to bump the version number
       - name: Bump version
         run: |
           echo "Updating version in ${{ matrix.folder }}/VERSION"
-          bumpversion patch --current-version $(cat ${{ matrix.folder }}/VERSION) --allow-dirty --config-file .bumpversion_dynamic.cfg
+          bump-my-version patch --config .bumpversion.toml
           NEW_VERSION=$(cat ${{ matrix.folder }}/VERSION)
           echo "New version is $NEW_VERSION"
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+
+      # Debug step to print the new version
+      - name: Debug new version
+        run: echo "New version set in VERSION file: $(cat ${{ matrix.folder }}/VERSION)"
 
       # Step to configure Git
       - name: Configure Git
