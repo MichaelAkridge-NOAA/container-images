@@ -48,8 +48,9 @@ jobs:
         # Step to checkout the repository
 
       # Step to set the repository owner name in lowercase 
-      # note: 
-      # needed for docker and github container registry and only if user/org has upper case letters
+      # notes: 
+      # needed for docker and github container registry 
+      # user/org and image names must be lower case 
       # see discussion for more details: https://github.com/orgs/community/discussions/27086
       - name: Set lower case owner name
         run: echo "OWNER_LC=${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]' | awk -F "=" '{print "OWNER_LC="$2}' >> $GITHUB_ENV
@@ -62,9 +63,9 @@ jobs:
             echo "1.0.0" > $VERSION_FILE
           fi
       # Debug step to print matrix folder
-      - name: Debug matrix folder
-        run: | 
-          echo "Matrix folder: ${{ matrix.folder }}"
+      #- name: Debug matrix folder
+      #  run: | 
+      #    echo "Matrix folder: ${{ matrix.folder }}"
 
       # Step to get the current version from the VERSION file
       - name: Get version
@@ -95,7 +96,7 @@ jobs:
       - name: Install bumpversion
         run: pip install bumpversion
   
-      # Step to create a dynamic bumpversion configuration
+      # Step to create a dynamic/temp bumpversion configuration
       - name: Create dynamic bumpversion config
         run: |
           echo "[bumpversion]" > .bumpversion_dynamic.cfg
@@ -106,8 +107,8 @@ jobs:
           echo "replace = {new_version}" >> .bumpversion_dynamic.cfg
   
       # Debug step to print bumpversion config
-      - name: Debug bumpversion config
-        run: cat .bumpversion_dynamic.cfg
+      #- name: Debug bumpversion config
+      #  run: cat .bumpversion_dynamic.cfg
 
       # Step to bump the version number
       # Notes: 
