@@ -134,7 +134,8 @@ jobs:
 
       # Debug step to print the new version
       - name: Debug new version
-        run: echo "New version set in VERSION file: $(cat ${{ matrix.folder }}/VERSION)"
+        run: | 
+          echo "New version set in VERSION file: $(cat ${{ matrix.folder }}/VERSION)"
 
       # Step to configure Git
       - name: Configure Git
