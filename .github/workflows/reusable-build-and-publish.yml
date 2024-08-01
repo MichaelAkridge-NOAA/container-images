@@ -123,7 +123,7 @@ jobs:
             echo "Updating version in $MATRIX_FOLDER/VERSION"
             echo "Using parse regex: $PARSE_REGEX"
             echo "Using serialize format: $SERIALIZE_FORMAT"
-            bump2version build --current-version $(cat ${{ matrix.folder }}/VERSION) --allow-dirty --config-file .bumpversion_dynamic.cfg 
+            bump2version build --current-version $(cat ${{ matrix.folder }}/VERSION) --allow-dirty --new-version --config-file .bumpversion_dynamic.cfg 
             NEW_VERSION=$(cat $MATRIX_FOLDER/VERSION)
             echo "New version is $NEW_VERSION"
             echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
