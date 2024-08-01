@@ -143,7 +143,7 @@ jobs:
           git config --global user.email "action@github.com"
           git config --global user.name "GitHub Action"
 
-      # Step to pull the latest changes from the main branch 
+      # Step to pull the latest changes from the main branch
       - name: Pull latest changes
         run: git pull origin main
 
