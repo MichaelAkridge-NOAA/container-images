@@ -111,10 +111,7 @@ jobs:
           echo "Using parse regex: $PARSE_REGEX"
           echo "Using serialize format: $SERIALIZE_FORMAT"
 
-          NEW_VERSION=$(bump-my-version show-bump --current-version $CURRENT_VERSION --parse "$PARSE_REGEX" --serialize "$SERIALIZE_FORMAT" $PART | grep new_version | sed -r s,"^.*=",,)
-          echo "New version: $NEW_VERSION"
-
-          bump-my-version bump --current-version $CURRENT_VERSION --new-version $NEW_VERSION --allow-dirty --parse "$PARSE_REGEX" --serialize "$SERIALIZE_FORMAT" $PART
+          bump-my-version bump --current-version $CURRENT_VERSION --allow-dirty --parse "$PARSE_REGEX" --serialize "$SERIALIZE_FORMAT" $PART
           NEW_VERSION=$(cat $MATRIX_FOLDER/VERSION)
           echo "New version is $NEW_VERSION"
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
