@@ -77,10 +77,11 @@ jobs:
       - name: Create dynamic bumpversion config
         run: |
           IMAGE_NAME=$(basename ${{ matrix.folder }})
+          MATRIX_FOLDER="${{ matrix.folder }}"
           echo "[bumpversion]" > .bumpversion_dynamic.cfg
           echo "commit = False" >> .bumpversion_dynamic.cfg
           echo "tag = False" >> .bumpversion_dynamic.cfg
-          echo "[bumpversion:file:${{ matrix.folder }}/VERSION]" >> .bumpversion_dynamic.cfg
+          echo "[bumpversion:file:${MATRIX_FOLDER}/VERSION]" >> .bumpversion_dynamic.cfg
           echo "search = {current_version}" >> .bumpversion_dynamic.cfg
           echo "replace = {new_version}" >> .bumpversion_dynamic.cfg
           if [[ "$MATRIX_FOLDER" == "./images/py-rocket-base" ]]; then
@@ -89,6 +90,9 @@ jobs:
           else
             echo "parse = (?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)" >> .bumpversion_dynamic.cfg
             echo "serialize = {major}.{minor}.{patch}" >> .bumpversion_dynamic.cfg
+          fi
+          echo "Generated bumpversion config:"
+          cat .bumpversion_dynamic.cfg
   
       # Debug step to print bumpversion config
       - name: Debug bumpversion config
