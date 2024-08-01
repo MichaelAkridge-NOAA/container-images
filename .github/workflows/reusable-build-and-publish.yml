@@ -99,8 +99,6 @@ jobs:
               echo "[bumpversion]" > .bumpversion_dynamic.cfg
               echo "commit = False" >> .bumpversion_dynamic.cfg
               echo "tag = False" >> .bumpversion_dynamic.cfg
-              echo "[bumpversion:part:build]" >> .bumpversion_dynamic.cfg
-              echo "independent = True" >> .bumpversion_dynamic.cfg
               echo "[bumpversion:file:${MATRIX_FOLDER}/VERSION]" >> .bumpversion_dynamic.cfg
               echo "search = {current_version}" >> .bumpversion_dynamic.cfg
               echo "replace = {new_version}" >> .bumpversion_dynamic.cfg
