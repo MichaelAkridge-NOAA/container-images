@@ -48,6 +48,9 @@ jobs:
         # Step to checkout the repository
 
       # Step to set the repository owner name in lowercase 
+      # note: 
+      # needed for docker and github container registry and only if user/org has upper case letters
+      # see discussion for more details: https://github.com/orgs/community/discussions/27086
       - name: Set lower case owner name
         run: echo "OWNER_LC=${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]' | awk -F "=" '{print "OWNER_LC="$2}' >> $GITHUB_ENV
 
@@ -62,20 +65,6 @@ jobs:
       - name: Debug matrix folder
         run: | 
           echo "Matrix folder: ${{ matrix.folder }}"
-
-      # Step to create a dynamic bumpversion configuration
-      - name: Create dynamic bumpversion config
-        run: |
-          echo "[bumpversion]" > .bumpversion_dynamic.cfg
-          echo "commit = False" >> .bumpversion_dynamic.cfg
-          echo "tag = False" >> .bumpversion_dynamic.cfg
-          echo "[bumpversion:file:${{ matrix.folder }}/VERSION]" >> .bumpversion_dynamic.cfg
-          echo "search = {current_version}" >> .bumpversion_dynamic.cfg
-          echo "replace = {new_version}" >> .bumpversion_dynamic.cfg
-  
-      # Debug step to print bumpversion config
-      - name: Debug bumpversion config
-        run: cat .bumpversion_dynamic.cfg
 
       # Step to get the current version from the VERSION file
       - name: Get version
@@ -105,8 +94,30 @@ jobs:
       # Step to install bumpversion
       - name: Install bumpversion
         run: pip install bumpversion
+  
+      # Step to create a dynamic bumpversion configuration
+      - name: Create dynamic bumpversion config
+        run: |
+          echo "[bumpversion]" > .bumpversion_dynamic.cfg
+          echo "commit = False" >> .bumpversion_dynamic.cfg
+          echo "tag = False" >> .bumpversion_dynamic.cfg
+          echo "[bumpversion:file:${{ matrix.folder }}/VERSION]" >> .bumpversion_dynamic.cfg
+          echo "search = {current_version}" >> .bumpversion_dynamic.cfg
+          echo "replace = {new_version}" >> .bumpversion_dynamic.cfg
+  
+      # Debug step to print bumpversion config
+      - name: Debug bumpversion config
+        run: cat .bumpversion_dynamic.cfg
 
       # Step to bump the version number
+      # Notes: 
+      # 1.0.0 = {major}.{minor}.{patch}
+      # example: 
+      # use 'bumpversion major' to bump major version and 'bumpversion patch' version and so on
+      # 1.0.0 will bump to 1.0.1  when using 'bumpversion patch'
+      # more info:
+      # for more complex version use updated branch: https://github.com/callowayproject/bump-my-version
+      # and regular expression parse/serialize options
       - name: Bump version
         run: |
           echo "Updating version in ${{ matrix.folder }}/VERSION"
