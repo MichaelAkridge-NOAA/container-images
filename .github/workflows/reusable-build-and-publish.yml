@@ -102,7 +102,6 @@ jobs:
       - name: Install bump2version
         run: pip install --upgrade bump2version
 
-      # Step to bump the version number
       - name: Bump version
         run: |
           IMAGE_NAME=$(basename ${{ matrix.folder }})
@@ -113,18 +112,14 @@ jobs:
           echo "[bumpversion:file:${MATRIX_FOLDER}/VERSION]" >> .bumpversion_dynamic.cfg
           echo "search = {current_version}" >> .bumpversion_dynamic.cfg
           echo "replace = {new_version}" >> .bumpversion_dynamic.cfg
-          if [[ "$MATRIX_FOLDER" == "./images/py-rocket-base" ]]; then
-            echo "parse = (?P<major>\d+)\.(?P<minor>\d+)\-(?P<patch>\d+)\.(?P<build>\d+)" >> .bumpversion_dynamic.cfg
-            echo "serialize = {major}.{minor}-{patch}.{build}" >> .bumpversion_dynamic.cfg
-          else
-            echo "parse = (?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)" >> .bumpversion_dynamic.cfg
-            echo "serialize = {major}.{minor}.{patch}" >> .bumpversion_dynamic.cfg
-          fi
+          echo "parse = (?P<major>\d+)\.(?P<minor>\d+)\-(?P<patch>\d+)\.(?P<build>\d+)" >> .bumpversion_dynamic.cfg
+          echo "serialize = {major}.{minor}-{patch}.{build}" >> .bumpversion_dynamic.cfg
           echo "Generated bumpversion config:"
           cat .bumpversion_dynamic.cfg
-          echo "Updating version in ${{ matrix.folder }}/VERSION"
-          bump2version build --current-version $(cat ${{ matrix.folder }}/VERSION) --allow-dirty --config-file .bumpversion_dynamic.cfg
-          NEW_VERSION=$(cat ${{ matrix.folder }}/VERSION)
+
+          echo "Updating version in $MATRIX_FOLDER/VERSION"
+          bump2version build --current-version $(cat $MATRIX_FOLDER/VERSION) --allow-dirty --config-file .bumpversion_dynamic.cfg
+          NEW_VERSION=$(cat $MATRIX_FOLDER/VERSION)
           echo "New version is $NEW_VERSION"
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
