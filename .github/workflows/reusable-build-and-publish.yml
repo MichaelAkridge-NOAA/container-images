@@ -63,16 +63,6 @@ jobs:
         run: | 
           echo "Matrix folder: ${{ matrix.folder }}"
 
-      # Step to create a dynamic bumpversion configuration
-      #- name: Create dynamic bumpversion config
-      #  run: |
-      #    echo "[bumpversion]" > .bumpversion_dynamic.cfg
-      #    echo "commit = False" >> .bumpversion_dynamic.cfg
-      #    echo "tag = False" >> .bumpversion_dynamic.cfg
-      #    echo "[bumpversion:file:${{ matrix.folder }}/VERSION]" >> .bumpversion_dynamic.cfg
-      #    echo "search = {current_version}" >> .bumpversion_dynamic.cfg
-      #    echo "replace = {new_version}" >> .bumpversion_dynamic.cfg
-
       # Step to get the current version from the VERSION file
       - name: Get version
         id: get_version
@@ -100,27 +90,45 @@ jobs:
 
       # Step to install bumpversion
       - name: Install bump2version
-        run: pip install --upgrade bump2version
-
+        run: pip install --upgrade bump-my-version
       - name: Bump version
         run: |
-          IMAGE_NAME=$(basename ${{ matrix.folder }})
-          MATRIX_FOLDER="${{ matrix.folder }}"
-          CURRENT_VERSION=$(cat $MATRIX_FOLDER/VERSION)
-          echo "Current version: $CURRENT_VERSION"
-          if [[ "$MATRIX_FOLDER" == "./images/py-rocket-base" ]]; then
-            PARSE_REGEX="(?P<major>\d+)\.(?P<minor>\d+)\-(?P<patch>\d+)\.(?P<build>\d+)"
-            SERIALIZE_FORMAT="{major}.{minor}-{patch}.{build}"
-          else
-            PARSE_REGEX="(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)"
-            SERIALIZE_FORMAT="{major}.{minor}.{patch}"
-          fi
-          echo "Using parse regex: $PARSE_REGEX"
-          echo "Using serialize format: $SERIALIZE_FORMAT"
-          bump2version build --current-version $CURRENT_VERSION --allow-dirty --parse "$PARSE_REGEX" --serialize "$SERIALIZE_FORMAT"
-          NEW_VERSION=$(cat $MATRIX_FOLDER/VERSION)
-          echo "New version is $NEW_VERSION"
-          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+            IMAGE_NAME=$(basename ${{ matrix.folder }})
+            MATRIX_FOLDER="${{ matrix.folder }}"
+            if [[ "$MATRIX_FOLDER" == "./images/py-rocket-base" ]]; then
+              echo "[bumpversion]" > .bumpversion_dynamic.cfg
+              echo "commit = False" >> .bumpversion_dynamic.cfg
+              echo "tag = False" >> .bumpversion_dynamic.cfg
+              echo "[bumpversion:file:${MATRIX_FOLDER}/VERSION]" >> .bumpversion_dynamic.cfg
+              echo "search = {current_version}" >> .bumpversion_dynamic.cfg
+              echo "replace = {new_version}" >> .bumpversion_dynamic.cfg
+              PARSE_REGEX="(?P<major>\d+)\.(?P<minor>\d+)\-(?P<patch>\d+)\.(?P<build>\d+)"
+              SERIALIZE_FORMAT="{major}.{minor}-{patch}.{build}"
+              echo "parse = (?P<major>\d+)\.(?P<minor>\d+)\-(?P<patch>\d+)\.(?P<build>\d+)" >> .bumpversion_dynamic.cfg
+              echo "serialize = {major}.{minor}-{patch}.{build}" >> .bumpversion_dynamic.cfg
+            else
+              echo "[bumpversion]" > .bumpversion_dynamic.cfg
+              echo "commit = False" >> .bumpversion_dynamic.cfg
+              echo "tag = False" >> .bumpversion_dynamic.cfg
+              echo "[bumpversion:part:build]" >> .bumpversion_dynamic.cfg
+              echo "independent = True" >> .bumpversion_dynamic.cfg
+              echo "[bumpversion:file:${MATRIX_FOLDER}/VERSION]" >> .bumpversion_dynamic.cfg
+              echo "search = {current_version}" >> .bumpversion_dynamic.cfg
+              echo "replace = {new_version}" >> .bumpversion_dynamic.cfg
+              echo "parse = (?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)" >> .bumpversion_dynamic.cfg
+              echo "serialize = {major}.{minor}.{patch}" >> .bumpversion_dynamic.cfg
+              PARSE_REGEX="(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)"
+              SERIALIZE_FORMAT="{major}.{minor}.{patch}"
+            fi
+            echo "Generated bumpversion config:"
+            cat .bumpversion_dynamic.cfg
+            echo "Updating version in $MATRIX_FOLDER/VERSION"
+            echo "Using parse regex: $PARSE_REGEX"
+            echo "Using serialize format: $SERIALIZE_FORMAT"
+            bump2version build --current-version $(cat ${{ matrix.folder }}/VERSION) --allow-dirty --config-file .bumpversion_dynamic.cfg --parse "$PARSE_REGEX" --serialize "$SERIALIZE_FORMAT" 
+            NEW_VERSION=$(cat $MATRIX_FOLDER/VERSION)
+            echo "New version is $NEW_VERSION"
+            echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       # Step to configure Git
       - name: Configure Git
