@@ -1,0 +1,157 @@
+name: ♻️ Reusable - 🚀 Build/Publish/Tag/Version Docker Images
+on:
+  workflow_call:
+    inputs:
+      artifact_name:
+        required: true
+        type: string
+      repository:
+        required: true
+        type: string
+jobs:
+  download-artifact:
+    runs-on: ubuntu-latest
+    outputs:
+      paths: ${{ steps.read-paths.outputs.paths }}
+    steps:
+      - uses: actions/checkout@v4
+        # Step to checkout the repository
+
+      # Step to download the artifact specified by the input artifact_name
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.artifact_name }}
+          path: .
+
+      # Step to read paths from the downloaded artifact and set as output
+      - name: Read paths and set output
+        id: read-paths
+        run: |
+          paths=$(cat dockerfile_paths.json)
+          paths_serialized=$(echo $paths | jq -c .)
+          echo "paths=${paths_serialized}" >> $GITHUB_OUTPUT
+        shell: bash
+        # This reads the dockerfile_paths.json file and sets the paths as an output
+
+  build-and-push:
+    runs-on: ubuntu-latest
+    needs: download-artifact
+    permissions: write-all
+    strategy:
+      matrix:
+        folder: ${{ fromJson(needs.download-artifact.outputs.paths) }}
+        # This creates a matrix of the folders containing Dockerfiles
+
+    steps:
+      - uses: actions/checkout@v4
+        # Step to checkout the repository
+
+      # Step to set the repository owner name in lowercase 
+      - name: Set lower case owner name
+        run: echo "OWNER_LC=${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]' | awk -F "=" '{print "OWNER_LC="$2}' >> $GITHUB_ENV
+
+      # Step to initialize the VERSION file if it doesn't exist
+      - name: Initialize VERSION file if it doesn't exist
+        run: |
+          VERSION_FILE=${{ matrix.folder }}/VERSION
+          if [ ! -f "$VERSION_FILE" ]; then
+            echo "1.0.0" > $VERSION_FILE
+          fi
+      # Debug step to print matrix folder
+      - name: Debug matrix folder
+        run: | 
+          echo "Matrix folder: ${{ matrix.folder }}"
+
+      # Step to create a dynamic bumpversion configuration
+      #- name: Create dynamic bumpversion config
+      #  run: |
+      #    echo "[bumpversion]" > .bumpversion_dynamic.cfg
+      #    echo "commit = False" >> .bumpversion_dynamic.cfg
+      #    echo "tag = False" >> .bumpversion_dynamic.cfg
+      #    echo "[bumpversion:file:${{ matrix.folder }}/VERSION]" >> .bumpversion_dynamic.cfg
+      #    echo "search = {current_version}" >> .bumpversion_dynamic.cfg
+      #    echo "replace = {new_version}" >> .bumpversion_dynamic.cfg
+
+      # Step to create a dynamic bumpversion configuration
+      - name: Create dynamic bumpversion config
+        run: |
+          IMAGE_NAME=$(basename ${{ matrix.folder }})
+          MATRIX_FOLDER="${{ matrix.folder }}"
+          echo "[bumpversion]" > .bumpversion_dynamic.cfg
+          echo "commit = False" >> .bumpversion_dynamic.cfg
+          echo "tag = False" >> .bumpversion_dynamic.cfg
+          echo "[bumpversion:file:${MATRIX_FOLDER}/VERSION]" >> .bumpversion_dynamic.cfg
+          echo "search = {current_version}" >> .bumpversion_dynamic.cfg
+          echo "replace = {new_version}" >> .bumpversion_dynamic.cfg
+          if [[ "$MATRIX_FOLDER" == "./images/py-rocket-base" ]]; then
+            echo "parse = (?P<major>\d+)\.(?P<minor>\d+)-(?P<patch>\d+\.\d+)" >> .bumpversion_dynamic.cfg
+            echo "serialize = {major}.{minor}-{patch}" >> .bumpversion_dynamic.cfg
+          else
+            echo "parse = (?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)" >> .bumpversion_dynamic.cfg
+            echo "serialize = {major}.{minor}.{patch}" >> .bumpversion_dynamic.cfg
+          fi
+          echo "Generated bumpversion config:"
+          cat .bumpversion_dynamic.cfg
+  
+      # Debug step to print bumpversion config
+      - name: Debug bumpversion config
+        run: cat .bumpversion_dynamic.cfg
+
+      # Step to get the current version from the VERSION file
+      - name: Get version
+        id: get_version
+        run: echo "VERSION=$(cat ${{ matrix.folder }}/VERSION)" >> $GITHUB_ENV
+
+      # Step to login to GitHub Container Registry
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Step to build and push the Docker image
+      - name: Build and push Docker image
+        continue-on-error: true
+        run: |
+          IMAGE_NAME=$(basename ${{ matrix.folder }})
+          echo "Building and pushing $IMAGE_NAME"
+          docker build ${{ matrix.folder }} -f ${{ matrix.folder }}/Dockerfile --tag ghcr.io/${OWNER_LC}/container-images/${IMAGE_NAME}:latest --tag ghcr.io/${OWNER_LC}/container-images/${IMAGE_NAME}:${{ env.VERSION }} --tag ghcr.io/${OWNER_LC}/container-images/${IMAGE_NAME}:${{ github.sha }}
+          docker push ghcr.io/${OWNER_LC}/container-images/${IMAGE_NAME}:latest
+          docker push ghcr.io/${OWNER_LC}/container-images/${IMAGE_NAME}:${{ env.VERSION }}
+          docker push ghcr.io/${OWNER_LC}/container-images/${IMAGE_NAME}:${{ github.sha }}
+        # This builds the Docker image and tags it with the latest version, current version, and commit SHA
+
+      # Step to install bumpversion
+      - name: Install bumpversion
+        run: pip install bumpversion
+
+      # Step to bump the version number
+      - name: Bump version
+        run: |
+          echo "Updating version in ${{ matrix.folder }}/VERSION"
+          bumpversion patch --current-version $(cat ${{ matrix.folder }}/VERSION) --allow-dirty --config-file .bumpversion_dynamic.cfg
+          NEW_VERSION=$(cat ${{ matrix.folder }}/VERSION)
+          echo "New version is $NEW_VERSION"
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+
+      # Step to configure Git
+      - name: Configure Git
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+
+      # Step to pull the latest changes from the main branch
+      - name: Pull latest changes
+        run: git pull origin main
+
+      # Step to commit and push the version bump changes
+      - name: Commit and push changes
+        run: |
+          git add ${{ matrix.folder }}/VERSION
+          git commit -m "Bump version for ${{ matrix.folder }} to ${{ env.NEW_VERSION }}"
+          git push origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NEW_VERSION: ${{ env.NEW_VERSION }}
