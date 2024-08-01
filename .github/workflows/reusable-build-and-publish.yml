@@ -65,7 +65,7 @@ jobs:
         run: | 
           echo "Matrix folder: ${{ matrix.folder }}"
 
-    # Step to create a dynamic bumpversion configuration
+      # Step to create a dynamic bumpversion configuration
       - name: Create dynamic bumpversion config
         run: |
           IMAGE_NAME=$(basename ${{ matrix.folder }})
@@ -84,13 +84,7 @@ jobs:
 
           # Handle special case for py-rocket-base
           if [ "$MATRIX_FOLDER" == "./images/py-rocket-base" ]; then
-            echo 'parse = """(?x)                       # Extended regex mode
-          (?P<major>0|[1-9]\d*)\.        # Major version
-          (?P<minor>0|[1-9]\d*)          # Minor version
-          -                              # Dash separator
-          (?P<patch>0|[1-9]\d*)\.        # Patch version
-          (?P<build>0|[1-9]\d*)          # Build version
-          """' >> .bumpversion.toml
+            echo "parse = '(?P<major>\\d+)\\.(?P<minor>\\d+)-(?P<patch>\\d+)\\.(?P<build>\\d+)'" >> .bumpversion.toml
             echo 'serialize = ["{major}.{minor}-{patch}.{build}"]' >> .bumpversion.toml
           else
             echo "parse = '(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)'" >> .bumpversion.toml
