@@ -62,7 +62,7 @@ jobs:
 
       # Debug step to print matrix folder
       - name: Debug matrix folder
-        run: |
+        run: | 
           echo "Matrix folder: ${{ matrix.folder }}"
 
       # Step to create a dynamic bumpversion configuration
@@ -75,6 +75,8 @@ jobs:
           echo "commit = false" >> .bumpversion.toml
           echo "tag = false" >> .bumpversion.toml
           echo "message = \"Bump version: {current_version} → {new_version}\"" >> .bumpversion.toml
+          echo "search = \"{current_version}\"" >> .bumpversion.toml
+          echo "replace = \"{new_version}\"" >> .bumpversion.toml
           echo "[tool.bumpversion.file]" >> .bumpversion.toml
           echo "file = \"${MATRIX_FOLDER}/VERSION\"" >> .bumpversion.toml
           if [ "$MATRIX_FOLDER" == "./images/py-rocket-base" ]; then
@@ -127,14 +129,14 @@ jobs:
       - name: Bump version
         run: |
           echo "Updating version in ${{ matrix.folder }}/VERSION"
-          bump-my-version patch --config .bumpversion.toml
+          bump-my-version bump --part patch --config .bumpversion.toml
           NEW_VERSION=$(cat ${{ matrix.folder }}/VERSION)
           echo "New version is $NEW_VERSION"
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       # Debug step to print the new version
       - name: Debug new version
-        run: | 
+        run: |
           echo "New version set in VERSION file: $(cat ${{ matrix.folder }}/VERSION)"
 
       # Step to configure Git
