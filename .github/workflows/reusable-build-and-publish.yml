@@ -28,9 +28,13 @@ jobs:
       - name: Read paths and set output
         id: read-paths
         run: |
-          paths=$(cat dockerfile_paths.json)
-          paths_serialized=$(echo $paths | jq -c .)
-          echo "paths=${paths_serialized}" >> $GITHUB_OUTPUT
+          if [ -f dockerfile_paths.json ]; then
+            paths=$(cat dockerfile_paths.json)
+            paths_serialized=$(echo $paths | jq -c .)
+            echo "paths=${paths_serialized}" >> $GITHUB_OUTPUT
+          else
+            echo "paths=[]" >> $GITHUB_OUTPUT
+          fi
         shell: bash
         # This reads the dockerfile_paths.json file and sets the paths as an output
 
