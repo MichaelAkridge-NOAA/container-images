@@ -22,7 +22,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.artifact_name }}
-          path: .T
+          path: .
 
       # Step to read paths from the downloaded artifact and set as output
       - name: Read paths and set output
