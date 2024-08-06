@@ -85,14 +85,26 @@ jobs:
         run: df -h
 
       # Step to free up disk space
+      #- name: Free disk space
+      #  run: |
+      #    sudo swapoff -a
+      #    sudo rm -f /swapfile
+      #    sudo apt clean
+      #    docker rmi $(docker image ls -aq) || true
+      #    df -h
+
+      # https://github.com/jlumbroso/free-disk-space
       - name: Free disk space
-        run: |
-          sudo swapoff -a
-          sudo rm -f /swapfile
-          sudo apt clean
-          docker rmi $(docker image ls -aq) || true
-          df -h
-            
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: false
+          dotnet: false
+          haskell: false
+          large-packages: false
+          docker-images: true
+          swap-storage: false      
+
       # debug: Step to monitor disk space before build
       - name: Check disk space before build
         run: df -h
@@ -119,10 +131,6 @@ jobs:
           docker push ghcr.io/${OWNER_LC}/container-images/${IMAGE_NAME}:${{ github.sha }}
         # This builds the Docker image and tags it with the latest version, current version, and commit SHA
       
-      # Step to clean up Docker images
-      - name: Clean up Docker images
-        run: |
-          docker rmi $(docker images -q) || true
 
       # debug: Step to monitor disk space after build
       - name: Check disk space after build
