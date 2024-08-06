@@ -1,4 +1,4 @@
-name: ♻️ Reusable - 🔍 Find All Dockerfiles and Create Matrix
+name: ♻️ Reusable - 🔍 Find Dockerfiles and Create Matrix
 on:
   workflow_call:
     inputs:
