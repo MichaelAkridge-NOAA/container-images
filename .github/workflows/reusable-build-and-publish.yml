@@ -1,5 +1,4 @@
 name: ♻️ Reusable - 🚀 Build/Publish/Tag/Version Docker Images
-# 14GB of free space for both private & public repos github runners
 on:
   workflow_call:
     inputs:
@@ -59,30 +58,38 @@ jobs:
       #    sudo rm -f /swapfile
       #    sudo apt clean
       #    docker rmi $(docker image ls -aq) || true
-      #    df -h
 
-      # https://github.com/jlumbroso/free-disk-space
+      # Step to free up disk space w/ GH action
+      # - (NOTE: more spaceneeded for larger docker images)
+      # - Github hosted runners usually have 20GB of space 
+      # - BUT only guaranteed 14GB of free space 
+      # - for both private & public repos github runners
+      # - repo link: https://github.com/jlumbroso/free-disk-space
+      # - Potential space savings of 31GB
       - name: Free disk space
         uses: jlumbroso/free-disk-space@main
         with:
-          # this might remove tools that are actually needed,
-          # if set to "true" but frees about 6 GB
+          # this might remove tools that are actually needed
+          # if set to "true" frees up Tool cache: saves 5.9GiB
           tool-cache: false
           # all of these default to true, but feel free to set to
           # "false" if necessary for workflow
+          # Android library: saves 14GiB
           android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
+          # .NET runtime: saves 2.7GiB
+          dotnet: false
+          # Haskell runtime: saves 0B
+          haskell: false
+          # Large misc. packages: saves 5.3GiB
+          large-packages: false
+          # Docker: Varies on Use by Action
           docker-images: false
-          swap-storage: true      
+          # Swap storage: saves 4.0GiB
+          swap-storage: false      
 
       # debug: Step to monitor disk space before build after cleanup
       - name: Check disk space before build
         run: df -h
-
-
-
 
       # Step to set the repository owner name in lowercase 
       # notes: 
@@ -137,8 +144,7 @@ jobs:
           docker push ghcr.io/${OWNER_LC}/container-images/${IMAGE_NAME}:latest
           docker push ghcr.io/${OWNER_LC}/container-images/${IMAGE_NAME}:${{ env.VERSION }}
           docker push ghcr.io/${OWNER_LC}/container-images/${IMAGE_NAME}:${{ github.sha }}
-        # This builds the Docker image and tags it with the latest version, current version, and commit SHA
-      
+        # This builds the Docker image and tags it with the latest version, current version, and commit SHA 
 
       # debug: Step to monitor disk space after build
       - name: Check disk space after build
