@@ -69,11 +69,10 @@ jobs:
       - name: Free disk space
         uses: jlumbroso/free-disk-space@main
         with:
-          # this might remove tools that are actually needed
-          # if set to "true" frees up Tool cache: saves 5.9GiB
+          # Remove tools that are sometimes needed (like python)
+          # if set to "true" frees up: 
+          # Tool cache: saves 5.9GiB
           tool-cache: false
-          # all of these default to true, but feel free to set to
-          # "false" if necessary for workflow
           # Android library: saves 14GiB
           android: true
           # .NET runtime: saves 2.7GiB
@@ -85,6 +84,7 @@ jobs:
           # Docker: Varies on Use by Action
           docker-images: false
           # Swap storage: saves 4.0GiB
+          # may be needed for some memory consuming actions
           swap-storage: false      
 
       # debug: Step to monitor disk space before build after cleanup
