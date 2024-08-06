@@ -42,6 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: download-artifact
     permissions: write-all
+    if: ${{ needs.download-artifact.outputs.paths != '[]' }}
     strategy:
       matrix:
         folder: ${{ fromJson(needs.download-artifact.outputs.paths) }}
