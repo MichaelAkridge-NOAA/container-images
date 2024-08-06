@@ -70,6 +70,8 @@ jobs:
         uses: jlumbroso/free-disk-space@main
         with:
           # Remove tools that are sometimes needed (like python)
+          # if needed, could use actions to reinstall 
+          # https://github.com/actions/setup-python
           # if set to "true" frees up: 
           # Tool cache: saves 5.9GiB
           tool-cache: false
