@@ -13,7 +13,7 @@ jobs:
   # Step to find Dockerfiles in the draft_images folder
   generate-matrix:
     name: 🔍 Find Dockerfiles and Create Matrix
-    uses: ./.github/workflows/reusable-find-dockerfiles.yml
+    uses: ./.github/workflows/reusable-find-updated-dockerfiles.yml
     with:
       base_folder: 'draft_images'
       artifact_name: 'dockerfile-paths'
