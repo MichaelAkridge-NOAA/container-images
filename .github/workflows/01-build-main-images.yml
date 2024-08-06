@@ -12,7 +12,7 @@ jobs:
   # Step to find Dockerfiles in the images folder
   generate-matrix:
     name: 🔍 Find Dockerfiles and Create Matrix
-    uses: ./.github/workflows/reusable-find-updated-dockerfiles.yml
+    uses: ./.github/workflows/reusable-find-dockerfiles.yml
     with:
       base_folder: 'images'
       artifact_name: 'dockerfile-paths'

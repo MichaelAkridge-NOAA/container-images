@@ -22,19 +22,15 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.artifact_name }}
-          path: .
+          path: .T
 
       # Step to read paths from the downloaded artifact and set as output
       - name: Read paths and set output
         id: read-paths
         run: |
-          if [ -f dockerfile_paths.json ]; then
-            paths=$(cat dockerfile_paths.json)
-            paths_serialized=$(echo $paths | jq -c .)
-            echo "paths=${paths_serialized}" >> $GITHUB_OUTPUT
-          else
-            echo "paths=[]" >> $GITHUB_OUTPUT
-          fi
+          paths=$(cat dockerfile_paths.json)
+          paths_serialized=$(echo $paths | jq -c .)
+          echo "paths=${paths_serialized}" >> $GITHUB_OUTPUT
         shell: bash
         # This reads the dockerfile_paths.json file and sets the paths as an output
 
@@ -42,7 +38,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: download-artifact
     permissions: write-all
-    if: ${{ needs.download-artifact.outputs.paths != '[]' }}
     strategy:
       matrix:
         folder: ${{ fromJson(needs.download-artifact.outputs.paths) }}
