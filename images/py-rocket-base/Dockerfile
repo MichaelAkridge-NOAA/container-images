@@ -1,6 +1,7 @@
 # tidyverse + texlive rocker with RStudio
 # adding this line to test action workflow
-# test two
+# test 2
+# test 3
 # Is designed to have a conda environment called notebook like
 # the pangeo images. The jupyterhub modules are in this environment.
 FROM rocker/verse:4.4
