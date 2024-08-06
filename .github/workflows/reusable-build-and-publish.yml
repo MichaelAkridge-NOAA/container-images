@@ -22,7 +22,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.artifact_name }}
-          path: .
+          path: .T
 
       # Step to read paths from the downloaded artifact and set as output
       - name: Read paths and set output
@@ -61,8 +61,8 @@ jobs:
 
       # Step to free up disk space w/ GH action
       # - (NOTE: more spaceneeded for larger docker images)
-      # - Github hosted runners usually have 20GB of space 
-      # - BUT only guaranteed 14GB of free space 
+      # - Github (Azure) hosted runners typically have ~ 14GB-20GB of space 
+      # - ONLY 14GB of free space is guaranteed
       # - for both private & public repos github runners
       # - repo link: https://github.com/jlumbroso/free-disk-space
       # - Potential space savings of 31GB
@@ -75,11 +75,11 @@ jobs:
           # if set to "true" frees up: 
           # Tool cache: saves 5.9GiB
           tool-cache: false
-          # Android library: saves 14GiB
+          # Android library: saves ~14GiB
           android: true
-          # .NET runtime: saves 2.7GiB
+          # .NET runtime: saves ~2.7GiB
           dotnet: false
-          # Haskell runtime: saves 0B
+          # Haskell runtime: varies
           haskell: false
           # Large misc. packages: saves 5.3GiB
           large-packages: false
@@ -126,17 +126,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Cache Docker layers
-        uses: actions/cache@v4
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      # Step to build and push the Docker image
       - name: Build and push Docker image
         continue-on-error: true
         run: |
@@ -149,8 +138,8 @@ jobs:
         # This builds the Docker image and tags it with the latest version, current version, and commit SHA 
 
       # debug: Step to monitor disk space after build
-      - name: Check disk space after build
-        run: df -h
+      #- name: Check disk space after build
+      #  run: df -h
 
       # Step to install bumpversion
       - name: Install bumpversion
